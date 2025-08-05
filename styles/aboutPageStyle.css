@@ -561,3 +561,126 @@ footer .footerNote {
 	font-family: sans-serif;
 }
 }
+
+/* GitHub Projects Section */
+.github-projects {
+    background: #f8f9fa;
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.project-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.project-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.project-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    fill: #666;
+}
+
+.project-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.project-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.project-title a:hover {
+    color: #3498db;
+}
+
+.project-description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.project-stats {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+.project-stat {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.project-stat svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.project-language {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.language-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.project-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.project-link {
+    padding: 6px 12px;
+    background: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.project-link:hover {
+    background: #2980b9;
+}
+
+.project-link.demo {
+    background: #27ae60;
+}
+
+.project-link.demo:hover {
+    background: #219a52;
+}
