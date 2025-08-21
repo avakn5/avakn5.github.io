@@ -572,5 +572,7 @@ footer .footerNote {
 	border: 0;
 	max-width: 100%;
   }
-  
+  .github-projects {
+	margin-bottom: 40px; /* adjust as needed */
+  }
 }
