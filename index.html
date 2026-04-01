@@ -14,23 +14,19 @@
 
 <body alink="#282727" vlink="#9b9b9b" link="#9b9b9b">
 <header>
-  <!-- Profile photo -->
   <div class="profilePhoto">
     <img src="AboutPageAssets/images/profile1.jpg" alt="Ava Kouhana" width="259">
   </div>
-  <!-- Identity details -->
   <section class="profileHeader">
     <h1>Ava Kouhana</h1>
     <h3>MS Student @ Stanford ICME (Computational and Mathematical Engineering)</h3>
     <hr>
     <p>
       I am an ICME master's degree student at Stanford University. Prior to Stanford, I spent six months conducting research at Harvard under the supervision of <a href="https://wang.hms.harvard.edu/about-us/" target="_blank">Dr. Mengyu Wang</a>, focusing primarily on Computer Vision tasks like Image Segmentation and Vision-Language Models. Before joining ICME, I had the opportunity to work for six months supervised by Stanford Professor <a href="https://med.stanford.edu/profiles/craig-levin" target="_blank">Dr. Craig Levin</a>, researching the application of Diffusion Models for image super-resolution.<br>
-      
       My research interests primarily revolve around computer vision, deep learning, and generative AI, with a growing interest for 3D modeling and video generation.
     </p>
   </section>
 
-  <!-- Social Links -->
   <aside class="socialNetworkNavBar">
     <div class="socialNetworkNav">
       <a href="mailto:akouhana@stanford.edu">
@@ -60,27 +56,20 @@
   </aside>
 </header>
 
-
-<!-- Content -->
 <section class="mainContent">
 
   <section class="section2 github-projects" style="margin-bottom: 40px;">
     <h2 class="sectionTitle">Pinned GitHub Projects</h2>
-  <hr class="sectionTitleRule">
-
-  <div class="project-cards">
-    <a href="https://github.com/avakn5/BPE-from-Scratch" target="_blank">
-      <img src="https://gh-card.dev/repos/avakn5/BPE-from-Scratch.svg" 
-           alt="GitHub Project Card">
-    </a>
-
-    <a href="https://github.com/avakn5/PiDMASound.git" target="_blank">
-      <img src="https://gh-card.dev/repos/avakn5/PiDMASound.svg" 
-           alt="GitHub Project Card">
-    </a>
-
-  </div>
-</section>
+    <hr class="sectionTitleRule">
+    <div class="project-cards">
+      <a href="https://github.com/avakn5/BPE-from-Scratch" target="_blank">
+        <img src="https://gh-card.dev/repos/avakn5/BPE-from-Scratch.svg" alt="GitHub Project Card">
+      </a>
+      <a href="https://github.com/avakn5/PiDMASound.git" target="_blank">
+        <img src="https://gh-card.dev/repos/avakn5/PiDMASound.svg" alt="GitHub Project Card">
+      </a>
+    </div>
+  </section>
 
   <!-- Publications -->
   <section class="section2">
@@ -88,7 +77,6 @@
     <hr class="sectionTitleRule">
     <hr class="sectionTitleRule2">
 
-    <!-- FairSeg -->
     <div class="sectionContent">
       <img src="AboutPageAssets/images/fairseg-thumbnail.png" style="width:100%; object-fit:contain" alt="FairSeg">
     </div>
@@ -105,7 +93,6 @@
 
     <br><br>
 
-    <!-- FairCLIP -->
     <div class="sectionContent">
       <img src="AboutPageAssets/images/fairclip-thumbnail.png" style="width:100%; object-fit:contain" alt="FairCLIP">
     </div>
@@ -122,7 +109,6 @@
 
     <br><br>
 
-    <!-- IEEE Conference Papers -->
     <div class="sectionContent">
       <img src="AboutPageAssets/images/pet-attenuation-scatter-correction-diffusion.jpg" style="width:100%; object-fit:contain" alt="PET Attenuation">
     </div>
@@ -150,7 +136,6 @@
       <div class="dropdown"><a href="https://ieeexplore.ieee.org/abstract/document/10656848" target="_blank">Abstract</a></div>
       <div class="dropdown"><a href="AboutPageAssets/images/AvaKouhana_20th_Symposium.jpg" target="_blank">Poster</a></div>
     </aside>
-
   </section>
 
   <!-- Projects -->
@@ -159,53 +144,152 @@
     <hr class="sectionTitleRule">
     <hr class="sectionTitleRule2">
 
-    <!-- Residual RL -->
-    <div style="display:flex; flex-direction:row; align-items:flex-start; gap:16px; margin-bottom: 8px;">
-      <div style="flex:1; min-width:0;">
-        <h2 class="sectionContentTitle">Residual RL with Uncertainty for Dexterous Manipulation in Robotics</h2>
-        <p style="margin: 6px 0 0 0; font-size: 14px; color: #555;">Analyzed interaction between imitation learning and residual RL, showing that increased data can degrade performance and motivating uncertainty-aware methods.</p>
+    <style>
+      .project-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 16px;
+      }
+      .project-card {
+        display: flex;
+        flex-direction: row;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: box-shadow 0.2s ease;
+        background: #fff;
+      }
+      .project-card:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+      }
+      .project-card-image {
+        width: 200px;
+        min-width: 200px;
+        overflow: hidden;
+        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .project-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .project-card-body {
+        padding: 16px 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .project-card-tag {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: #8c1515;
+        background: #f9f0f0;
+        border-radius: 4px;
+        padding: 2px 8px;
+        margin-bottom: 8px;
+      }
+      .project-card-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #222;
+        margin: 0 0 6px 0;
+      }
+      .project-card-authors {
+        font-size: 12px;
+        color: #777;
+        margin: 0 0 8px 0;
+        font-style: italic;
+      }
+      .project-card-desc {
+        font-size: 13px;
+        color: #555;
+        margin: 0 0 14px 0;
+        line-height: 1.5;
+      }
+      .project-card-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .project-card-links a {
+        font-size: 12px;
+        font-weight: 600;
+        color: #8c1515;
+        border: 1px solid #8c1515;
+        border-radius: 4px;
+        padding: 3px 10px;
+        text-decoration: none;
+        transition: background 0.15s, color 0.15s;
+      }
+      .project-card-links a:hover {
+        background: #8c1515;
+        color: #fff;
+      }
+    </style>
+
+    <div class="project-grid">
+
+      <div class="project-card">
+        <div class="project-card-image">
+          <img src="AboutPageAssets/images/image_residualRL.jpg" alt="Residual RL">
+        </div>
+        <div class="project-card-body">
+          <div>
+            <span class="project-card-tag">Robotics &middot; RL</span>
+            <h3 class="project-card-title">Residual RL with Uncertainty for Dexterous Manipulation</h3>
+            <p class="project-card-authors">Kuo-Han Hung*, Max Liu*, Ava Kouhana* &nbsp;&middot;&nbsp; CS234 Course Project, Stanford</p>
+            <p class="project-card-desc">Analyzed interaction between imitation learning and residual RL, showing that increased data can degrade performance. Proposed an uncertainty-aware residual RL framework achieving a 6.3% relative improvement on dexterous manipulation tasks.</p>
+          </div>
+          <div class="project-card-links">
+            <a href="AboutPageAssets/files/CS_234_Project_Final_Report.pdf" target="_blank">Report</a>
+          </div>
+        </div>
       </div>
-      <div class="sectionContent" style="flex-shrink:0; width:180px;">
-        <img src="/Users/akouhana/website_avakn5/AboutPageAssets/images/image_residualRL.jpg" style="width:100%; object-fit:contain;" alt="Residual RL">
+
+      <div class="project-card">
+        <div class="project-card-image">
+          <img src="AboutPageAssets/images/image_bpe.jpg" alt="Language Model from Scratch">
+        </div>
+        <div class="project-card-body">
+          <div>
+            <span class="project-card-tag">NLP &middot; PyTorch</span>
+            <h3 class="project-card-title">Language Model Components from Scratch (MiniLM, Transformer, BPE)</h3>
+            <p class="project-card-authors">Personal Project</p>
+            <p class="project-card-desc">Implemented Transformer architecture, byte pair encoding, and a minimal language model from scratch in PyTorch.</p>
+          </div>
+          <div class="project-card-links">
+            <a href="https://github.com/avakn5/Transformer-from-Scratch" target="_blank">Transformer</a>
+            <a href="https://github.com/avakn5/BPE-from-Scratch" target="_blank">BPE</a>
+          </div>
+        </div>
       </div>
+
+      <div class="project-card">
+        <div class="project-card-image">
+          <img src="AboutPageAssets/images/image_pidmasound.jpg" alt="PiDMASound">
+        </div>
+        <div class="project-card-body">
+          <div>
+            <span class="project-card-tag">Systems &middot; Bare-Metal</span>
+            <h3 class="project-card-title">PiDMASound &mdash; Bare-Metal Audio Engine (Raspberry Pi)</h3>
+            <p class="project-card-authors">Personal Project</p>
+            <p class="project-card-desc">Built a real-time audio system using DMA, PWM, interrupts, and a double-buffered DMA pipeline to generate analog sound from a single GPIO pin.</p>
+          </div>
+          <div class="project-card-links">
+            <a href="https://github.com/avakn5/PiDMASound" target="_blank">GitHub</a>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <aside class="externalResourcesNav">
-      <div class="dropdown"><a href="/Users/akouhana/Desktop/CS_234_Project_Final_Report__1_ (2).pdf" target="_blank">Report</a></div>
-    </aside>
-
-    <br><br>
-
-    <!-- Language Model from Scratch -->
-    <div style="display:flex; flex-direction:row; align-items:flex-start; gap:16px; margin-bottom: 8px;">
-      <div style="flex:1; min-width:0;">
-        <h2 class="sectionContentTitle">Language Model Components from Scratch (MiniLM, Transformer, BPE)</h2>
-        <p style="margin: 6px 0 0 0; font-size: 14px; color: #555;">Implemented Transformer architecture, byte pair encoding, and a minimal language model from scratch in PyTorch.</p>
-      </div>
-      <div class="sectionContent" style="flex-shrink:0; width:180px;">
-        <img src="/Users/akouhana/website_avakn5/AboutPageAssets/images/image_bpe.jpg" style="width:100%; object-fit:contain;" alt="Language Model from Scratch">
-      </div>
-    </div>
-    <aside class="externalResourcesNav">
-      <div class="dropdown"><a href="https://github.com/avakn5/Transformer-from-Scratch" target="_blank">Transformer</a></div>
-      <div class="dropdown"><a href="https://github.com/avakn5/BPE-from-Scratch" target="_blank">BPE</a></div>
-    </aside>
-
-    <br><br>
-
-    <!-- PiDMASound -->
-    <div style="display:flex; flex-direction:row; align-items:flex-start; gap:16px; margin-bottom: 8px;">
-      <div style="flex:1; min-width:0;">
-        <h2 class="sectionContentTitle">PiDMASound &mdash; Bare-Metal Audio Engine (Raspberry Pi)</h2>
-        <p style="margin: 6px 0 0 0; font-size: 14px; color: #555;">Built a real-time audio system using DMA, PWM, interrupts, and a double-buffered DMA pipeline to generate analog sound from a single GPIO pin.</p>
-      </div>
-      <div class="sectionContent" style="flex-shrink:0; width:180px;">
-        <img src="/Users/akouhana/website_avakn5/AboutPageAssets/images/image_pidmasound.jpg" style="width:100%; object-fit:contain;" alt="PiDMASound">
-      </div>
-    </div>
-    <aside class="externalResourcesNav">
-      <div class="dropdown"><a href="https://github.com/avakn5/PiDMASound" target="_blank">GitHub</a></div>
-    </aside>
-
   </section>
 
   <!-- Awards -->
@@ -217,6 +301,8 @@
       <li><b>2nd place Outstanding Poster at the 20th anniversary of ICME Stanford Research Symposium</b></li>
     </ul>
   </section>
+
+</section>
 
 <footer>
   <br><br>
