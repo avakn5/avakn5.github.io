@@ -1,0 +1,5 @@
+# Private blog drafts — never published
+blog/drafts/
+
+# macOS clutter
+.DS_Store
