@@ -267,6 +267,15 @@
     display: block;
   }
 
+  .project-img.chart-thumb {
+    background: #e7ebf3;
+    padding: 10px;
+  }
+
+  .project-img.chart-thumb img {
+    object-fit: contain;
+  }
+
   .project-body {
     padding: 18px 22px;
     flex: 1;
@@ -454,6 +463,19 @@
     <hr class="section-rule">
     <div class="project-list">
 
+      <div class="project-card">
+        <div class="project-img chart-thumb">
+          <img src="AboutPageAssets/images/coveragent-attribution-leaderboard.png" alt="CoverAgent responsibility attribution leaderboard">
+        </div>
+        <div class="project-body">
+          <div>
+            <span class="tag">Agent Safety &middot; Benchmark</span>
+            <h3 class="project-title">CoverAgent &mdash; Multi-Agent Collision in Responsibility Attribution</h3>
+            <p class="project-meta">Research project, in progress</p>
+            <p class="project-desc">Studying whether LLM agents preserve accurate responsibility attribution when a peer agent pressures them to obscure its own role in an incident. The harness probes how human-facing reports change under multi-agent peer pressure.</p>
+          </div>
+        </div>
+      </div>
 
       <div class="project-card">
         <div class="project-img">
