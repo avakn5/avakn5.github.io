@@ -269,11 +269,13 @@
 
   .project-img.chart-thumb {
     background: #e7ebf3;
-    padding: 10px;
   }
 
   .project-img.chart-thumb img {
-    object-fit: contain;
+    object-fit: cover;
+    object-position: 50% 48%;
+    transform: scale(1.55);
+    transform-origin: center;
   }
 
   .project-body {
@@ -471,7 +473,7 @@
           <div>
             <span class="tag"> Multi-Agent Collision &middot; Agent Safety </span>
             <h3 class="project-title">CoverAgent &mdash; Multi-Agent Collision in Responsibility Attribution</h3>
-            <p class="project-meta">Research project, in progress</p>
+            <p class="project-meta">In progress</p>
             <p class="project-desc">Studying whether LLM agents preserve accurate responsibility attribution when a peer agent pressures them to obscure its own role in an incident. The harness probes how human-facing reports change under multi-agent peer pressure.</p>
           </div>
         </div>
@@ -485,7 +487,6 @@
           <div>
             <span class="tag">Systems &middot; Bare-Metal</span>
             <h3 class="project-title">PiDMASound &mdash; Bare-Metal Audio Engine (Raspberry Pi)</h3>
-            <p class="project-meta">Personal Project</p>
             <p class="project-desc">Built a real-time audio system using DMA, PWM, interrupts, and a double-buffered DMA pipeline to generate analog sound from a single GPIO pin.</p>
           </div>
           <div class="link-row">
@@ -519,7 +520,6 @@
           <div>
             <span class="tag">NLP &middot; PyTorch</span>
             <h3 class="project-title">Language Model Components from Scratch (MiniLM, Transformer, BPE)</h3>
-            <p class="project-meta">Personal Project</p>
             <p class="project-desc">Implemented Transformer architecture, byte pair encoding, and a minimal language model from scratch in PyTorch.</p>
           </div>
           <div class="link-row">
