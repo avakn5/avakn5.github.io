@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PiDMASound: Bare-Metal Audio on a Raspberry Pi — Ava Kouhana</title>
+<meta name="description" content="How I turned a single Raspberry Pi GPIO pin into analog audio on bare metal — sigma-delta modulation, DMA, PWM, and interrupts.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PiDMASound: Bare-Metal Audio on a Raspberry Pi">
+<meta property="og:description" content="Turning a single 1-bit GPIO pin into analog sound with bare-metal sigma-delta, DMA, PWM, and interrupts.">
+<meta property="og:image" content="https://avakn5.github.io/AboutPageAssets/images/image_pidmasound.jpg">
+<meta property="og:url" content="https://avakn5.github.io/blog/first-post.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="https://www-media.stanford.edu/assets/favicon/favicon-32x32.png" sizes="32x32">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="blog.css">
+
+<!-- Post-specific visual components. Reuses the blog design tokens; adds a
+     secondary "analog" accent to distinguish the digital vs. analog domains. -->
+<style>
+  :root { --analog: #2f7d6f; --analog-light: #edf6f4; --amber: #9a6a00; --amber-light: #fbf5e6; }
+
+  /* wider reading column for this post (blog default is 720px) */
+  .blog-wrapper { max-width: 880px; }
+
+  /* smaller, centered hero photo */
+  .hero-shot img { max-width: 400px; margin-left: auto; margin-right: auto; }
+
+  /* grid of oscilloscope photos */
+  .scope-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px auto; max-width: 520px; }
+  .scope-grid img { width: 100%; border-radius: 6px; border: 1px solid var(--border); margin: 0; }
+  @media (max-width: 620px) { .scope-grid { grid-template-columns: 1fr; } }
+
+  /* reader comments */
+  .comments { margin-top: 52px; padding-top: 28px; border-top: 1px solid var(--border); }
+  .comments h2 { font-family: 'EB Garamond', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 6px; }
+  .comments-intro { font-size: 14px; color: var(--text-secondary); margin-bottom: 14px; }
+
+  /* approved comment list */
+  .comment-list { list-style: none; margin: 0; padding: 0; }
+  .comment { padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .comment-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .comment-name { font-weight: 600; font-size: 14px; }
+  .comment-date { font-size: 12px; color: var(--text-muted); }
+  .comment-body { font-size: 14.5px; margin: 0; }
+  .comment-empty { font-size: 14px; color: var(--text-muted); font-style: italic; margin: 4px 0 24px; }
+
+  /* comment form */
+  .comment-form-title { font-family: 'EB Garamond', serif; font-size: 1.2rem; font-weight: 600; margin: 26px 0 4px; }
+  .comment-form { max-width: 560px; }
+  .cf-field { display: block; margin-bottom: 14px; }
+  .cf-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 5px; }
+  .cf-label em { font-weight: 400; color: var(--text-muted); font-style: italic; }
+  .comment-form input[type=text], .comment-form textarea {
+    width: 100%; font: inherit; font-size: 14px; color: var(--text);
+    background: var(--white); border: 1px solid var(--border); border-radius: 8px;
+    padding: 9px 12px; resize: vertical;
+  }
+  .comment-form input[type=text]:focus, .comment-form textarea:focus { outline: none; border-color: var(--cardinal); }
+  .cf-submit {
+    font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+    color: #fff; background: var(--cardinal); border: none; border-radius: 8px; padding: 9px 20px;
+  }
+  .cf-submit:hover { background: #7a1212; }
+
+  .lede { font-size: 1.12rem; color: var(--text-secondary); }
+  .post-article strong { font-weight: 600; }
+
+  /* editor's note — only visible in the private draft */
+  .draft-note {
+    background: var(--amber-light);
+    border: 1px dashed #d9b45a;
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin: 24px 0;
+    font-size: 13.5px;
+    color: var(--amber);
+  }
+  .draft-note strong { color: var(--amber); }
+  .draft-note ul { margin: 8px 0 0 1.2em; }
+
+  /* figure + caption wrapper */
+  figure { margin: 30px 0; }
+  figure svg, figure img { display: block; width: 100%; height: auto; }
+  figcaption {
+    font-size: 12.5px; color: var(--text-muted); text-align: center;
+    margin-top: 10px; font-style: italic; line-height: 1.5;
+  }
+
+  /* domain legend */
+  .domain-key { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+  .domain-key span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+  .swatch.d { background: var(--cardinal); }
+  .swatch.a { background: var(--analog); }
+
+  /* signal-chain flow */
+  .chain { display: flex; flex-wrap: wrap; align-items: stretch; justify-content: center; gap: 6px; margin: 8px 0; }
+  .node {
+    flex: 0 1 auto; min-width: 96px; text-align: center;
+    border: 1px solid var(--border); border-radius: 10px; background: var(--white);
+    padding: 10px 12px; box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  }
+  .node .n-title { font-weight: 600; font-size: 13px; color: var(--text); }
+  .node .n-sub { font-size: 10.5px; color: var(--text-muted); margin-top: 2px; letter-spacing: .01em; }
+  .node.d { border-top: 3px solid var(--cardinal); }
+  .node.a { border-top: 3px solid var(--analog); background: var(--analog-light); }
+  .arrow { align-self: center; color: var(--text-muted); font-size: 15px; user-select: none; }
+
+  /* key-number spec cards */
+  .specs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 26px 0; }
+  .spec { border: 1px solid var(--border); border-radius: var(--radius); background: var(--white); padding: 14px 12px; text-align: center; }
+  .spec .s-val { font-family: 'EB Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--cardinal); line-height: 1.1; }
+  .spec .s-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 6px; }
+
+  /* callout — key insight */
+  .callout {
+    border-left: 3px solid var(--cardinal);
+    background: var(--cardinal-light);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 14px 18px; margin: 26px 0; font-size: 14.5px;
+  }
+  .callout.analog { border-left-color: var(--analog); background: var(--analog-light); }
+  .callout .c-tag { display:block; font-size: 10.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--cardinal); margin-bottom: 4px; }
+  .callout.analog .c-tag { color: var(--analog); }
+
+  /* inline math boxes (no math engine — styled HTML) */
+  .math {
+    font-family: 'EB Garamond', serif; font-size: 1.18rem;
+    background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 13px 18px; margin: 18px 0; text-align: center; line-height: 1.6;
+  }
+  .math sub { font-size: .68em; }
+  .math .pos { color: var(--analog); font-weight: 600; }
+  .math .neg { color: var(--cardinal); font-weight: 600; }
+  .math .muted { font-family: 'Inter', sans-serif; font-size: .72rem; color: var(--text-muted); font-style: italic; }
+
+  /* comparison table */
+  .compare { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14px; }
+  .compare th, .compare td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .compare thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+  .compare tbody th { font-weight: 500; color: var(--text-secondary); width: 34%; }
+  .compare td.good { color: var(--analog); }
+  .compare td.bad { color: var(--cardinal); }
+
+  /* ping-pong buffer diagram */
+  .pingpong { display: flex; align-items: stretch; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
+  .buf { flex: 1 1 200px; border-radius: 10px; padding: 14px 16px; border: 1px solid var(--border); }
+  .buf.play { background: var(--analog-light); border-color: #bfe0d8; }
+  .buf.fill { background: var(--cardinal-light); border-color: #eccccc; }
+  .buf .b-name { font-weight: 600; font-size: 14px; }
+  .buf .b-role { font-size: 12.5px; margin-top: 3px; }
+  .buf.play .b-role { color: var(--analog); }
+  .buf.fill .b-role { color: var(--cardinal); }
+  .swap-badge { text-align: center; font-size: 13px; color: var(--text-secondary); margin: 4px 0 0; }
+  .swap-badge b { color: var(--text); }
+
+  /* numbered handler steps */
+  .steps { list-style: none; margin: 20px 0; padding: 0; counter-reset: step; }
+  .steps li { position: relative; padding: 8px 0 8px 42px; border-bottom: 1px solid var(--border); font-size: 14.5px; }
+  .steps li:last-child { border-bottom: none; }
+  .steps li::before {
+    counter-increment: step; content: counter(step);
+    position: absolute; left: 0; top: 8px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--cardinal); color: #fff;
+    font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* animated "huge buffer vs. double buffer" — ported live from the project slides */
+  .bufcompare { display: flex; gap: 20px; align-items: stretch; justify-content: center; flex-wrap: wrap; margin: 12px 0 4px; }
+  .bufcompare .col { flex: 1 1 260px; text-align: center; }
+  .bufcompare .col h4 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 12px; }
+  .col.huge h4 { color: var(--cardinal); }
+  .col.small h4 { color: var(--analog); }
+  .bufcompare .vs { flex: 0 0 auto; align-self: center; font-family: 'EB Garamond', serif; font-style: italic; font-size: 1.4rem; color: var(--text-muted); }
+
+  .huge-frame { height: 216px; display: flex; align-items: flex-end; justify-content: center; }
+  .huge-bar {
+    width: 110px; border-radius: 8px 8px 4px 4px;
+    background: linear-gradient(180deg, #a51c1c, #8c1515);
+    color: #fff; font-size: 11px; writing-mode: vertical-rl; text-orientation: mixed;
+    display: flex; align-items: center; justify-content: center; padding: 12px 0;
+    height: 0; transition: height 1.2s ease-out; white-space: nowrap;
+  }
+  .huge-cap { font-size: 12px; color: var(--cardinal); margin-top: 8px; min-height: 16px; opacity: 0; transition: opacity .6s; font-weight: 500; }
+
+  .small-frame { height: 216px; display: flex; align-items: flex-end; justify-content: center; gap: 14px; }
+  .mini { text-align: center; }
+  .mini .m-status { font-size: 11px; min-height: 16px; margin-bottom: 6px; color: var(--text-muted); font-weight: 500; }
+  .mini .m-box {
+    width: 72px; height: 56px; border-radius: 8px; border: 2px solid var(--border); background: var(--white);
+    display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--text-secondary);
+    transition: background .4s, border-color .4s, color .4s;
+  }
+  .mini .m-cap { font-size: 10.5px; color: var(--text-muted); margin-top: 4px; }
+  .m-box.playing { background: var(--analog-light); border-color: var(--analog); color: var(--analog); }
+  .m-box.filling { background: var(--cardinal-light); border-color: var(--cardinal); color: var(--cardinal); }
+  .mini.out .m-box { border-color: #cfcfcf; background: #f3f3f1; font-size: 1.4rem; }
+  .irq-flash {
+    display: inline-block; margin: 14px auto 0; padding: 5px 14px; border-radius: 6px;
+    background: var(--amber); color: #fff; font-size: 12px; font-weight: 600;
+    opacity: 0; transition: opacity .2s;
+  }
+  .small-cap { font-size: 12px; color: var(--analog); margin-top: 8px; min-height: 16px; opacity: 0; transition: opacity .6s; font-weight: 500; }
+
+  @media (max-width: 600px) {
+    .specs { grid-template-columns: repeat(2, 1fr); }
+    .node { min-width: 42%; }
+    .arrow { display: none; }
+    .bufcompare .vs { display: none; }
+  }
+</style>
+</head>
+
+<body>
+<div class="blog-wrapper">
+
+  <nav class="blog-nav"><a href="index.html">&larr; Blog</a></nav>
+
+  <article class="post-article">
+    <p class="post-meta">Bare-metal systems &nbsp;·&nbsp; Personal project &nbsp;·&nbsp; Stanford CS140E</p>
+
+    <h1>PiDMASound: Bare-Metal Audio on a Raspberry Pi</h1>
+
+    <p class="lede">
+      If no one had ever coded an OS before, how would you get music out of a Raspberry Pi? GPIO pins can only output 
+       <strong>0&nbsp;V or 3.3&nbsp;V</strong>. So how do you turn a single digital pin into analog sound?
+    </p>
+
+    <!-- ============================ THE PROBLEM ============================ -->
+    <h2>The core problem</h2>
+    <p>
+      Last winter I took <strong>CS140E</strong> at Stanford &mdash; building an operating
+      system on a Raspberry Pi from scratch &mdash; with the wonderful Dawson Engler.
+      For my final project I wanted to generate analog sound. 
+    </p>
+    <p>
+      GPIO pins are <strong>1-bit</strong>: at any instant either low (0&nbsp;V)
+      or high (3.3&nbsp;V). Nothing in between. But the music we listen
+      to every day is an analog, continuous, signal. Hence the core
+      question: how do we play the Harry Potter soundtrack on a Raspberry Pi?
+    </p>
+
+    <div class="callout">
+      <span class="c-tag">The gap to bridge</span>
+      Turn a <strong>1-bit digital output</strong> &mdash; a wire that only knows 0 and
+      3.3&nbsp;V &mdash; into something that sounds like continuous analog audio.
+    </div>
+
+    <p>
+      The whole system is one pipeline that carries a 16-bit audio sample from RAM all the
+      way to a speaker, crossing from the digital into world after the low-pass filter. 
+    </p>
+
+    <figure>
+      <div class="chain">
+        <div class="node d"><div class="n-title">PCM</div><div class="n-sub">16-bit · 44.1 kHz</div></div>
+        <span class="arrow">→</span>
+        <div class="node d"><div class="n-title">Σ-Δ modulator</div><div class="n-sub">oversample 64×</div></div>
+        <span class="arrow">→</span>
+        <div class="node d"><div class="n-title">PDM stream</div><div class="n-sub">1-bit · 2.8 MHz</div></div>
+        <span class="arrow">→</span>
+        <div class="node d"><div class="n-title">DMA</div><div class="n-sub">streams buffers</div></div>
+        <span class="arrow">→</span>
+        <div class="node d"><div class="n-title">PWM serializer</div><div class="n-sub">shifts bits out</div></div>
+        <span class="arrow">→</span>
+        <div class="node d"><div class="n-title">GPIO 18</div><div class="n-sub">0 / 3.3 V</div></div>
+        <span class="arrow">→</span>
+        <div class="node a"><div class="n-title">RC low-pass</div><div class="n-sub">reconstruct</div></div>
+        <span class="arrow">→</span>
+        <div class="node a"><div class="n-title">🔊 speaker</div><div class="n-sub">analog sound</div></div>
+      </div>
+      <div class="domain-key">
+        <span><i class="swatch d"></i> digital domain (bits &amp; timing)</span>
+        <span><i class="swatch a"></i> analog domain (the physical filter)</span>
+      </div>
+      <figcaption> Sounds like a scary system, but it's actually easier than it looks. We will talk about each step. Everything up to GPIO 18 is digital; the RC filter is where the bitstream becomes an analog voltage, the system replaces an OS DAC (Digital-to-analog signal)</figcaption>
+    </figure>
+
+    <!-- ============================ WHY BARE METAL ============================ -->
+    <h2>What are the constraints of using bare metal?</h2>
+    <p>
+      Let's avoid talking about the Broadcom BCM2835 datasheet torture, which is, no doubt, a disadvantage in life on
+      its own. 
+      Without an OS, the only way to make an analog voltage is to build a DAC (Digital-to-Analog Converter) yourself:
+      generate a fast stream of 1s and 0s whose average is the voltage you want, and let a resistor-capacitor (RC) filter do the averaging.
+      Amonst the hardest constraint is the CPU pace, but we will talk about it later.
+
+    <!-- ============================ PART II ============================ -->
+    <h2>From 16-bit samples to a 1-bit stream</h2>
+    <p>
+      Audio starts as <strong>PCM</strong> (Pulse-Code Modulation): a standard representation
+      where each sample is a number storing the waveform's amplitude at one instant. Here, we start with the standard
+      16-bit samples at 44.1&nbsp;kHz.
+    </p>
+    <p>
+      A 1-bit pin can't emit a 16-bit number. So we use first-order sigma-delta (Σ-Δ) modulator to convert each PCM sample 
+      into <strong>1-bit</strong>, at an oversampling ratio of 64×. The result is a <strong>PDM</strong> (Pulse-Density
+      Modulation) stream: the <em>density of 1s</em> encodes the amplitude. Lots of 1s &rarr;
+      high voltage; mostly 0s &rarr; low voltage. To recover the original waveform, you just low-pass
+      filter it.
+    </p>
+
+    <p>
+      Why 64×? a first-order Σ-Δ modulator buys roughly 9&nbsp;dB of signal-to-noise ratio per octave (each doubling) of
+      oversampling, because it pushes more of the quantization noise up above the audio band.
+      64× is clean enough to enjoy, while keeping the bit rate low enough for the hardware to stream in real time.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 640 168" role="img" aria-label="A sine wave above a 1-bit pulse-density stream; the density of pulses is highest under the crest of the wave and sparse under the trough.">
+        <!-- baseline for sine band -->
+        <line x1="20" y1="48" x2="620" y2="48" stroke="#e5e5e5" stroke-width="1" stroke-dasharray="3 4"/>
+        <!-- sine (analog target) -->
+        <polyline fill="none" stroke="#2f7d6f" stroke-width="2.5"
+          points="20.0,48.0 26.2,46.0 32.5,44.1 38.8,42.1 45.0,40.2 51.2,38.4 57.5,36.5 63.8,34.7 70.0,33.0 76.2,31.3 82.5,29.7 88.8,28.2 95.0,26.8 101.2,25.4 107.5,24.2 113.8,23.1 120.0,22.0 126.2,21.1 132.5,20.3 138.8,19.6 145.0,19.0 151.2,18.6 157.5,18.3 163.8,18.1 170.0,18.0 176.2,18.1 182.5,18.3 188.8,18.6 195.0,19.0 201.2,19.6 207.5,20.3 213.8,21.1 220.0,22.0 226.2,23.1 232.5,24.2 238.8,25.4 245.0,26.8 251.2,28.2 257.5,29.7 263.8,31.3 270.0,33.0 276.2,34.7 282.5,36.5 288.8,38.4 295.0,40.2 301.2,42.1 307.5,44.1 313.8,46.0 320.0,48.0 326.2,50.0 332.5,51.9 338.8,53.9 345.0,55.8 351.2,57.6 357.5,59.5 363.8,61.3 370.0,63.0 376.2,64.7 382.5,66.3 388.8,67.8 395.0,69.2 401.2,70.6 407.5,71.8 413.8,72.9 420.0,74.0 426.2,74.9 432.5,75.7 438.8,76.4 445.0,77.0 451.2,77.4 457.5,77.7 463.8,77.9 470.0,78.0 476.2,77.9 482.5,77.7 488.8,77.4 495.0,77.0 501.2,76.4 507.5,75.7 513.8,74.9 520.0,74.0 526.2,72.9 532.5,71.8 538.8,70.6 545.0,69.2 551.2,67.8 557.5,66.3 563.8,64.7 570.0,63.0 576.2,61.3 582.5,59.5 588.8,57.6 595.0,55.8 601.2,53.9 607.5,51.9 613.8,50.0 620.0,48.0"/>
+        <!-- divider -->
+        <line x1="20" y1="90" x2="620" y2="90" stroke="#e5e5e5" stroke-width="1"/>
+        <!-- 1-bit density carpet (real first-order sigma-delta of the sine above) -->
+        <g fill="#8c1515">
+          <rect x="28.1" y="114" width="2.6" height="30"/><rect x="40.6" y="114" width="2.6" height="30"/><rect x="53.1" y="114" width="2.6" height="30"/><rect x="59.3" y="114" width="2.6" height="30"/><rect x="71.8" y="114" width="2.6" height="30"/><rect x="78.1" y="114" width="2.6" height="30"/><rect x="84.3" y="114" width="2.6" height="30"/><rect x="90.6" y="114" width="2.6" height="30"/><rect x="103.1" y="114" width="2.6" height="30"/><rect x="109.3" y="114" width="2.6" height="30"/><rect x="115.6" y="114" width="2.6" height="30"/><rect x="121.8" y="114" width="2.6" height="30"/><rect x="128.1" y="114" width="2.6" height="30"/><rect x="134.3" y="114" width="2.6" height="30"/><rect x="140.6" y="114" width="2.6" height="30"/><rect x="146.8" y="114" width="2.6" height="30"/><rect x="153.1" y="114" width="2.6" height="30"/><rect x="159.3" y="114" width="2.6" height="30"/><rect x="165.6" y="114" width="2.6" height="30"/><rect x="171.8" y="114" width="2.6" height="30"/><rect x="178.1" y="114" width="2.6" height="30"/><rect x="184.3" y="114" width="2.6" height="30"/><rect x="190.6" y="114" width="2.6" height="30"/><rect x="196.8" y="114" width="2.6" height="30"/><rect x="203.1" y="114" width="2.6" height="30"/><rect x="209.3" y="114" width="2.6" height="30"/><rect x="215.6" y="114" width="2.6" height="30"/><rect x="221.8" y="114" width="2.6" height="30"/><rect x="228.1" y="114" width="2.6" height="30"/><rect x="240.6" y="114" width="2.6" height="30"/><rect x="246.8" y="114" width="2.6" height="30"/><rect x="253.1" y="114" width="2.6" height="30"/><rect x="259.3" y="114" width="2.6" height="30"/><rect x="265.6" y="114" width="2.6" height="30"/><rect x="278.1" y="114" width="2.6" height="30"/><rect x="284.3" y="114" width="2.6" height="30"/><rect x="296.8" y="114" width="2.6" height="30"/><rect x="303.1" y="114" width="2.6" height="30"/><rect x="315.6" y="114" width="2.6" height="30"/><rect x="328.1" y="114" width="2.6" height="30"/><rect x="340.6" y="114" width="2.6" height="30"/><rect x="359.3" y="114" width="2.6" height="30"/><rect x="384.3" y="114" width="2.6" height="30"/><rect x="515.6" y="114" width="2.6" height="30"/><rect x="565.6" y="114" width="2.6" height="30"/><rect x="590.6" y="114" width="2.6" height="30"/><rect x="603.1" y="114" width="2.6" height="30"/>
+        </g>
+        <!-- labels -->
+        <text x="24" y="14" font-family="Inter,sans-serif" font-size="11" fill="#2f7d6f" font-weight="600">PCM amplitude — the analog target</text>
+        <text x="24" y="106" font-family="Inter,sans-serif" font-size="11" fill="#8c1515" font-weight="600">1-bit PDM — density of 1s tracks amplitude</text>
+      </svg>
+      <figcaption>
+        A real first-order sigma-delta encoding: where the wave is high the 1s pack together, and inversely when the signal is low.
+      </figcaption>
+    </figure>
+
+    <h3>The math: a first-order sigma-delta loop</h3>
+    <p>
+     The aim of the sigma-delta loop is to convert each 16-bit sample into 64 one-bit samples (the 64× oversampling ratio). At each of the 64 oversampled steps the sigma-delta modulator adds the gap between what we
+      want and what we last emitted, then emits a single bit from the sign of that error:
+    </p>
+
+    <div class="math">
+      e<sub>n</sub> = e<sub>n−1</sub> + (x − q<sub>n</sub>),
+      &nbsp; q<sub>n</sub> = <span class="pos">+FS</span> if e<sub>n</sub> ≥ 0 else <span class="neg">−FS</span>
+      &nbsp;→&nbsp; bit = 1 if e<sub>n</sub> ≥ 0 else 0
+    </div>
+
+    <p>
+      Here <em>x</em> is the PCM sample and <em>±FS</em> is full scale (±32768). Feeding the
+      quantized output <em>back</em> and integrating the error forces the <strong>average</strong>
+      of the 1-bit stream to equal <em>x</em>, while pushing the quantization noise up into
+      high frequencies the RC filter discards (this is <em>noise shaping</em>). Over many bits
+      the density of 1s settles at:
+    </p>
+
+    <div class="math">
+      density of 1s &nbsp;≈&nbsp; (x + FS) / (2·FS)
+    </div>
+
+    <p>The code is short — this is the real modulator, called with <code>oversample = 64</code>:</p>
+
+<pre><code>static int sd_integrator = 0;   // running quantization error
+static int sd_feedback   = 0;   // last output as a ±full-scale value
+
+void sigma_delta_modulate_n(const short *pcm_in, unsigned n_samples,
+                            unsigned char *pdm_out, unsigned oversample)
+{
+    unsigned bit_index = 0;
+    for (unsigned s = 0; s &lt; n_samples; s++) {
+        int x = pcm_in[s];                        // one 16-bit PCM sample
+        for (unsigned i = 0; i &lt; oversample; i++) {      // 64 bits / sample
+            sd_integrator += x - sd_feedback;            // accumulate error
+            if (sd_integrator >= 0) {
+                sd_feedback = 32767;                         // +full scale
+                pdm_out[bit_index >> 3] |=  (0x80 >> (bit_index &amp; 7));
+            } else {
+                sd_feedback = -32768;                        // -full scale
+                pdm_out[bit_index >> 3] &amp;= ~(0x80 >> (bit_index &amp; 7));
+            }
+            bit_index++;
+        }
+    }
+}</code></pre>
+
+    <h3>The naive approach, and why it fails</h3>
+    <p>
+      The naive plan was to precompute the PDM stream for the entire song into one big buffer in
+      RAM, then play it out. It works, but it's suboptimal for 3 reasons:
+    </p>
+    <ul>
+      <li>You must precompute the entire song</strong> before a single note plays.</li>
+      <li>It wastes RAM memory; roughly <strong>20&nbsp;MB per minute</strong> of audio.</li>
+      <li>You can't generate live music/ on-the-fly</li>
+    </ul>
+
+<pre><code>naive (whole song) : 2.8224 Mbit/s × 60 s ≈ 20 MB per minute of RAM
+double buffer      : 2 × one small block   ≈ constant, plays forever</code></pre>
+
+    <div class="callout">
+      <span class="c-tag">The fix</span>
+      A <strong>double buffer</strong> plus <strong>interrupts</strong>. The DMA plays one
+      buffer while the CPU fills the other. When a buffer drains, an interrupt fires and the
+      two swap. Memory is Constant !!
+    </div>
+
+    <table class="compare">
+      <thead>
+        <tr><th>&nbsp;</th><th>Single giant buffer</th><th>Double buffer + IRQ</th></tr>
+      </thead>
+      <tbody>
+        <tr><th>Memory</th><td class="bad">~20 MB / minute, grows with length</td><td class="good">constant, two small blocks</td></tr>
+        <tr><th>Startup</th><td class="bad">precompute the entire song first</td><td class="good">start immediately, fill as you go</td></tr>
+        <tr><th>Streaming / live audio</th><td class="bad">impossible</td><td class="good"> inherently generate on the fly</td></tr>
+      </tbody>
+    </table>
+
+    <h3>One huge buffer vs. two small ones</h3>
+    <p>
+      The single buffer grows without bound; the two small buffers just hand off to each other on
+      every interrupt &mdash; DMA plays one while the CPU refills the other, forever:
+    </p>
+
+    <figure>
+      <div class="bufcompare" id="bufcompare">
+
+        <!-- LEFT: one huge buffer -->
+        <div class="col huge">
+          <h4>Without interrupts — one huge buffer</h4>
+          <div class="huge-frame">
+            <div class="huge-bar" id="huge-bar">entire song in RAM</div>
+          </div>
+          <div class="huge-cap" id="huge-cap">~20 MB per minute @ 44.1 kHz</div>
+        </div>
+
+        <div class="vs">vs</div>
+
+        <!-- RIGHT: two small buffers -->
+        <div class="col small">
+          <h4>With interrupts — two small buffers</h4>
+          <div class="small-frame">
+            <div class="mini">
+              <div class="m-status" id="stA">&nbsp;</div>
+              <div class="m-box" id="boxA">Buf A</div>
+              <div class="m-cap">128 bytes</div>
+            </div>
+            <div class="mini">
+              <div class="m-status" id="stB">&nbsp;</div>
+              <div class="m-box" id="boxB">Buf B</div>
+              <div class="m-cap">128 bytes</div>
+            </div>
+            <div class="mini out">
+              <div class="m-status">output</div>
+              <div class="m-box">🔊</div>
+              <div class="m-cap">GPIO 18</div>
+            </div>
+          </div>
+          <div class="irq-flash" id="irq-flash">⚡ IRQ fires — swap buffers!</div>
+          <div class="small-cap" id="small-cap">Total ~256 bytes — ~80,000× less memory</div>
+        </div>
+
+      </div>
+      <figcaption>
+        Ported live from the PiDMASound slides. Left: one buffer holding the whole song, growing
+        with its length. Right: two 128-byte buffers ping-ponging &mdash; each interrupt swaps
+        which one the DMA plays and which the CPU refills. Constant memory, forever.
+      </figcaption>
+    </figure>
+
+    <!-- ============================ WHY DMA ============================ -->
+    <h2>Why DMA?</h2>
+    <p>
+      Could the CPU just toggle the pin itself? To hit live-quality audio the
+      PDM stream runs at <strong>2,822,400 bits per second</strong>. That's one pin update
+      every <strong>354 nanoseconds</strong> &mdash; forever, with no jitter.
+    </p>
+
+<pre><code>bit_period = 1 / 2,822,400 Hz
+           ≈ 354 ns          # one GPIO write every 354 ns, deterministically</code></pre>
+
+    <p>
+      At that rate, the bare-metal CPU would be monopolized entirely by that task. This is exactly
+      what <strong>DMA</strong> (Direct Memory Access) is for: a hardware engine that moves
+      bytes from memory to a periphera without using the CPU, with deterministic timing.
+      DMA streams the PDM buffers straight into the PWM hardware, which clocks them onto GPIO&nbsp;18.
+    </p>
+    <div class="callout">
+      <span class="c-tag">Why it matters</span>
+      The CPU only has to fire a couple of thousand times a second to refill a buffer &mdash;
+      not 2.8&nbsp;million times to toggle each bit.
+    </div>
+
+    <h3>I tried to do it the hard way first</h3>
+    <p>
+      Before the current system, I tried the option where the CPU fires directly each bit, driven by a timer interrupt. 
+      But it wasn't successful, the latency of each interrupt and the race condition prevented it from working. On the
+      oscilloscope, the "sine wave" looked like anything but a sine.
+    </p>
+
+    <figure>
+      <div class="scope-grid">
+        <img src="../AboutPageAssets/images/broken_sinewave/IMG_2870.jpg" alt="Oscilloscope trace of a warped, sagging sine wave produced by CPU bit-banging">
+        <img src="../AboutPageAssets/images/broken_sinewave/IMG_2871.jpg" alt="Oscilloscope showing many overlapping, jittering sine traces">
+        <img src="../AboutPageAssets/images/broken_sinewave/IMG_2876.jpg" alt="Oscilloscope trace breaking into jagged, glitchy steps">
+      </div>
+      <figcaption>
+        Screenshots from my oscilloscope which was supposed to display a sinewave while I was trying to debug it.
+      </figcaption>
+    </figure>
+
+    <!-- ============================ WHY PWM ============================ -->
+    <h2>Why PWM? Clocking and timing</h2>
+    <p>
+      The Pulse-width modulation (PWM) peripheral is used here in serializer mode. It's role is to shift individual bits out of its FIFO
+      straight onto the pin &mdash; each bit becomes one high or low pulse. It's the PWM that paces the DMA for bits to live the pin at exactly the correct rate 
+      for the sound to be recognizable for our ears. 
+    </p>
+
+<pre><code>PLLD              500 MHz          # source clock
+  ÷ 177.16                         # CM_PWMDIV = (177&lt;&lt;12) | 656
+= PWM/serializer  2.8224 MHz       # one PDM bit shifted out per clock
+= PDM bit rate    2.8224 MHz       # = 44.1 kHz × 64  →  44.1 kHz audio</code></pre>
+
+    <p>
+       The target pace is <strong> roughly 44,100 samples/second</strong>; if the pace is not this one, the pitch and quality will sound off. 
+    </p>
+
+    <div class="specs">
+      <div class="spec"><div class="s-val">44.1 kHz</div><div class="s-label">sample rate</div></div>
+      <div class="spec"><div class="s-val">64×</div><div class="s-label">oversampling</div></div>
+      <div class="spec"><div class="s-val">2.8224 MHz</div><div class="s-label">PDM bit rate</div></div>
+      <div class="spec"><div class="s-val">354 ns</div><div class="s-label">per-bit budget</div></div>
+    </div>
+
+    <!-- ============================ IRQ REFILL ============================ -->
+    <h2>Interrupt-driven refill</h2>
+    <p>
+      Each time the DMA finishes a buffer it raises an interrupt &mdash; roughly
+      <strong>2,756 times per second</strong>. That interrupt signifies that the other buffer should be used to push bits through GPIO 18.
+    </p>
+
+    <ol class="steps">
+      <li>Grab the next batch of <strong>PCM samples</strong>.</li>
+      <li>Run them through the <strong>sigma-delta modulator</strong>.</li>
+      <li>Generate the next <strong>PDM block</strong>.</li>
+      <li>Refill the buffer the DMA just finished, and hand it back.</li>
+    </ol>
+
+    <p>
+      And voila. The music streams with constant memory, and the CPU is idle the vast majority
+      of the time. 
+    </p>
+
+    <h3>Firing interrupts on bare metal</h3>
+    <p>
+      With no OS, we need to (eww) write code bare-metal. It would be impossible to know what to do without the broadcom doc.
+      But thanks to it, we install our own ARM exception vector table
+      at address <code>0x0</code>, arm IRQs by clearing the <code>I</code> bit of the CPSR by
+      hand, and enable the single line we care about with
+      <code>PUT32(IRQ_Enable_1, 1 &lt;&lt; (16 + DMA_CHANNEL))</code> &mdash; DMA channel 5's
+      completion interrupt:
+    </p>
+
+<pre><code>@ arm IRQs: clear the I bit (bit 7) of the CPSR
+enable_interrupts:
+    mrs r0, cpsr
+    bic r0, r0, #(1 &lt;&lt; 7)      @ I = 0  →  IRQs enabled
+    msr cpsr_c, r0
+    bx  lr</code></pre>
+
+    <p>
+      When the DMA drains a buffer it raises that IRQ. The CPU vectors to our assembly stub,
+      which saves the registers, calls the C handler, then returns with <code>movs pc, lr</code>
+      &mdash; the one instruction that restores the CPSR and re-enables interrupts as it returns:
+    </p>
+
+<pre><code>interrupt_asm:
+    mov  sp, #INT_STACK_ADDR
+    sub  lr, lr, #4           @ IRQ return-address fixup
+    push {r0-r12, lr}
+    bl   interrupt_vector     @ → the C handler below
+    pop  {r0-r12, lr}
+    movs pc, lr               @ return + restore CPSR (re-enables IRQs)</code></pre>
+
+    <p>
+      And the C handler that actually runs ~2,756 times a second &mdash; acknowledge the
+      interrupt, swap which buffer the DMA plays, and refill the one it just finished:
+    </p>
+
+<pre><code>// DMA-completion ISR — condensed from audio-dma.c
+void interrupt_vector(unsigned pc) {
+    if (GET32(IRQ_pending_1) &amp; DMA_CH_IRQ_BIT) {    // our DMA channel?
+        PUT32(DMA_CS(DMA_CHANNEL), CS_ACTIVE | CS_INT); // ack, keep running
+
+        unsigned done = dma_playing;   // buffer the DMA just finished
+        dma_playing ^= 1;              // DMA now plays the other one
+
+        // sigma-delta the next 16 PCM samples into the free buffer
+        refill(pdm_buf[done]);         // (inner loop shown earlier)
+    }
+}</code></pre>
+
+    <!-- ============================ RC FILTER ============================ -->
+    <h2>Back to analog: the RC filter</h2>
+    <p>
+      Everything so far produces a clean, fast digital pulse train on GPIO&nbsp;18. The
+      final step &mdash; the only analog part of the whole build &mdash; is a single-pole
+      <strong>RC low-pass filter</strong> that averages those pulses into a smooth voltage: continous sound. Its
+      cutoff has to sit in the gap between two rates: well above the audio you want to
+      keep (up to ~20&nbsp;kHz) and well below the 2.8&nbsp;MHz PDM carrier you want to
+      erase.
+    </p>
+
+<pre><code>f_cutoff = 1 / (2π · R · C)     # aim between 20 kHz and 2.8 MHz</code></pre>
+
+    <!-- ============================ HEARING IT WORK ============================ -->
+    <h2>Hearing it work</h2>
+
+    <figure>
+      <video controls playsinline preload="metadata"
+             style="width:100%;max-width:520px;margin:0 auto;display:block;border-radius:var(--radius);border:1px solid var(--border);">
+        <source src="../AboutPageAssets/images/IMG_2903.mp4" type="video/mp4">
+        Your browser can't play this clip inline &mdash;
+        <a href="../AboutPageAssets/images/IMG_2903.mp4">download it here</a>.
+      </video>
+      <figcaption>The Pi playing the Harry Potter theme straight out of the single-pin PDM pipeline.</figcaption>
+    </figure>
+
+    <h3>So, does it actually sound good?</h3>
+    <p>
+      I think the answer is that I wouldnt use it for my daily listen of Amy Winehouse, but given the constraint, not bad !
+    </p>
+
+    <p>
+      Code and build notes are on GitHub, and there's a slide deck walking through the design:
+    </p>
+    <p>
+      <a href="https://github.com/avakn5/PiDMASound" target="_blank" rel="noopener">PiDMASound on GitHub →</a>
+      &nbsp;·&nbsp;
+      <a href="https://htmlpreview.github.io/?https://github.com/avakn5/PiDMASound/blob/main/slides/new_slides.html" target="_blank" rel="noopener">Project slides →</a>
+    </p>
+
+    <!-- ============================ COMMENTS ============================ -->
+    <section class="comments" id="comments">
+      <h2>Comments</h2>
+
+      <!-- Approved comments go here. When Ava forwards one, add an <li> like the sample below. -->
+      <ol class="comment-list">
+        <!--
+        <li class="comment">
+          <div class="comment-head"><span class="comment-name">Reader name</span><span class="comment-date">Jul 2026</span></div>
+          <p class="comment-body">Their comment text goes here.</p>
+        </li>
+        -->
+      </ol>
+      <p class="comment-empty">No comments yet.</p>
+
+      <h3 class="comment-form-title">Leave a comment</h3>
+
+      <form class="comment-form" action="https://formsubmit.co/avakouh@gmail.com" method="POST">
+        <input type="hidden" name="_subject" value="New comment on PiDMASound">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_next" value="https://avakn5.github.io/blog/first-post.html#comments">
+        <!-- spam honeypot: bots fill this, humans don't see it -->
+        <input type="text" name="_honey" style="display:none">
+
+        <label class="cf-field">
+          <span class="cf-label">Name</span>
+          <input type="text" name="name" autocomplete="name">
+        </label>
+        <label class="cf-field">
+          <span class="cf-label">Comment</span>
+          <textarea name="comment" rows="5" required placeholder="Your thoughts, questions, corrections…"></textarea>
+        </label>
+        <button type="submit" class="cf-submit">Send comment</button>
+      </form>
+    </section>
+
+  </article>
+
+  <footer class="blog-footer">&copy; 2026 Ava Kouhana</footer>
+
+</div>
+
+<!-- Buffer-comparison animation (ported from the PiDMASound slides). Self-contained. -->
+<script>
+(function () {
+  var fig = document.getElementById('bufcompare');
+  if (!fig) return;
+
+  var hugeBar  = document.getElementById('huge-bar'),
+      hugeCap  = document.getElementById('huge-cap'),
+      boxA     = document.getElementById('boxA'),
+      boxB     = document.getElementById('boxB'),
+      stA      = document.getElementById('stA'),
+      stB      = document.getElementById('stB'),
+      irq      = document.getElementById('irq-flash'),
+      smallCap = document.getElementById('small-cap');
+
+  function setPlaying(playA) {
+    boxA.className = 'm-box ' + (playA ? 'playing' : 'filling');
+    boxB.className = 'm-box ' + (playA ? 'filling' : 'playing');
+    stA.textContent = playA ? '▶ DMA playing' : '⟳ CPU filling';
+    stB.textContent = playA ? '⟳ CPU filling' : '▶ DMA playing';
+  }
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) {                       // static end-state, no looping
+    hugeBar.style.transition = 'none';
+    hugeBar.style.height = '200px';
+    hugeCap.style.opacity = '1';
+    smallCap.style.opacity = '1';
+    setPlaying(true);
+    return;
+  }
+
+  var timer = null, playA = true;
+  function tick() {
+    setPlaying(playA);
+    setTimeout(function () {
+      irq.style.opacity = '1';
+      setTimeout(function () { irq.style.opacity = '0'; }, 600);
+    }, 1000);
+    playA = !playA;
+  }
+  function run() {
+    hugeBar.style.height = '0'; hugeCap.style.opacity = '0'; smallCap.style.opacity = '0';
+    setTimeout(function () { hugeBar.style.height = '200px'; }, 300);
+    setTimeout(function () { hugeCap.style.opacity = '1'; }, 1500);
+    setTimeout(function () {
+      smallCap.style.opacity = '1';
+      playA = true; tick();
+      timer = setInterval(tick, 1800);
+    }, 2300);
+  }
+
+  var started = false;
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting && !started) { started = true; run(); io.disconnect(); }
+      });
+    }, { threshold: 0.35 });
+    io.observe(fig);
+  } else {
+    run();
+  }
+})();
+</script>
+</body>
+</html>
