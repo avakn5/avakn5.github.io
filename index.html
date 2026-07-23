@@ -145,6 +145,8 @@
     width: 14px;
     height: 14px;
     object-fit: contain;
+    display: block;
+    flex: 0 0 14px;
   }
 
   /* SECTIONS */
@@ -199,6 +201,15 @@
     padding: 2px 8px;
     margin-bottom: 8px;
   }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .tag-row .tag { margin-bottom: 0; }
 
   /* PUBLICATIONS */
   .pub-list { display: flex; flex-direction: column; gap: 28px; }
@@ -469,7 +480,10 @@
         </div>
         <div class="project-body">
           <div>
-            <span class="tag"> Multi-Agent Collision &middot; Agent Safety </span>
+            <div class="tag-row">
+              <span class="tag">AI safety</span>
+              <span class="tag">Alignment</span>
+            </div>
             <h3 class="project-title">CoverAgent &mdash; Multi-Agent Collision in Responsibility Attribution</h3>
             <p class="project-meta">In progress</p>
             <p class="project-desc">Studying whether LLM agents preserve accurate responsibility attribution when a peer agent pressures them to obscure its own role in an incident. The harness probes how human-facing reports change under multi-agent peer pressure.</p>
@@ -487,7 +501,10 @@
         </div>
         <div class="project-body">
           <div>
-            <span class="tag">Systems &middot; Bare-Metal</span>
+            <div class="tag-row">
+              <span class="tag">Bare-metal</span>
+              <span class="tag">Code</span>
+            </div>
             <h3 class="project-title">PiDMASound &mdash; Bare-Metal Audio Engine (Raspberry Pi)</h3>
             <p class="project-desc">Built a real-time audio system using DMA, PWM, interrupts, and a double-buffered DMA pipeline to generate analog sound from a single GPIO pin.</p>
           </div>
@@ -521,6 +538,10 @@
   <section class="section">
     <h2 class="section-title">Blog</h2>
     <hr class="section-rule">
+    <div class="tag-row">
+      <span class="tag">AI safety</span>
+      <span class="tag">Alignment</span>
+    </div>
     <h3 class="project-title" style="margin-bottom:4px;">
       <a href="blog/coveragent.html">CoverAgent: Responsibility Attribution Under Pressure to Conceal</a>
     </h3>
@@ -529,6 +550,10 @@
       when another agent pressures them to conceal fault.
     </p>
 
+    <div class="tag-row">
+      <span class="tag">Bare-metal</span>
+      <span class="tag">Code</span>
+    </div>
     <h3 class="project-title" style="margin-bottom:4px;">
       <a href="blog/first-post.html">PiDMASound: Bare-Metal Audio on a Raspberry Pi</a>
     </h3>
@@ -537,8 +562,6 @@
       modulation, DMA, PWM, and interrupts.
     </p>
     <div class="link-row">
-      <a class="link-btn" href="blog/coveragent.html">Read CoverAgent</a>
-      <a class="link-btn" href="blog/first-post.html">Read the post</a>
       <a class="link-btn" href="blog/">Visit the blog</a>
     </div>
   </section>
