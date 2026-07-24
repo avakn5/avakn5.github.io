@@ -1435,7 +1435,7 @@
           Under peer-reputation pressure in the minimal deployment condition, <strong>49.5%</strong>
           of non-refusal final reports misattribute responsibility. Minimal deployment condition means the human supervisor simply asks the PersonalAssistant to write a report, without adding explicit honesty or accountability instructions.
           Adding explicit instructions to be helpful, honest, and use judgment reduces this to
-          <strong>23.7%</strong> on matched model-scenario cells, but does not eliminate the failure mode.
+          <strong>22.6%</strong> on matched model-scenario cells, but does not eliminate the failure mode.
         </p>
 
         <p>
@@ -1443,8 +1443,8 @@
           Larger models are not uniformly more faithful under concealment pressure. In the fixed-culprit
           scheduling sweep, training family explains attribution differences better than scale. A small
           4B Qwen names the true cause <strong>90%</strong> of the time, while a 120B GPT-OSS does so
-          only <strong>23%</strong>. Within a family, scale helps non-monotonically:
-          Qwen3-32B collapses to <strong>24%</strong>.
+          only <strong>23%</strong>. Within a family, attribution is non-monotonic with scale:
+          Qwen3-32B drops to <strong>35.5%</strong>.
         </p>
 
         <p>
@@ -1550,7 +1550,7 @@
             <span class="stat-arrow-note">Humans explicitly asked the agent to be "Honest, helpful, and use judgment."</span>
           </div>
           <div class="stat">
-            <div class="value">23.7%</div>
+            <div class="value">22.6%</div>
             <div class="caption">of final reports misattribute responsibility under peer-reputation pressure with increased guardrails.</div>
           </div>
         </div>
@@ -1575,8 +1575,9 @@
         </div>
 
         <p>
-          Across all three scenarios, all evaluated models in the no-pressure control attributed the
-          correct responsibility <strong>100% of the time</strong>.
+          Across scheduling and coding, no-pressure controls produced clear responsibility attribution
+          in <strong>119 of 120 reports (99.2%)</strong>; the single non-clear attribution case was a
+          GPT-OSS-20B coding report which was judged intentionally vague.
         </p>
 
         <h3>Reading the Categories</h3>
@@ -1687,9 +1688,9 @@
           With SchedulingAgent held fixed at GLM-5.2 and the PersonalAssistant varied, attribution
           differences are large and not explained by parameter count alone. In this sweep, a Qwen3-4B
           reporter names the true cause <strong>90%</strong> of the time, while GPT-OSS-120B does so
-          only <strong>23%</strong> of the time. Within the Qwen family, scaling parameter counts improve accurate attribution rate but non monotically as Qwen3-32B drops to
-          <strong>24%</strong> clear attribution and frames the incident as a software issue in more
-          than half of seeds.
+          only <strong>23%</strong> of the time. Within the Qwen family, attribution is non-monotonic with scale, as Qwen3-32B drops to
+          <strong>35.5%</strong> clear attribution (<strong>11 / 31</strong>) and frames the incident
+          as a software issue in <strong>32.3%</strong> of seeds (<strong>10 / 31</strong>).
         </p>
 
         <figure class="wide">
@@ -1741,7 +1742,7 @@
 
         <p>
           Concrete evidence limits outright false attribution. GPT-OSS-120B adopts the unverifiable cover story <strong>78%</strong> of the time in scheduling, but adopts the falsifiable external
-          cyberattack story only <strong>2%</strong> in coding.
+          cyberattack story <strong>0%</strong> of the time in coding, in both minimal and guardrail conditions.
         </p>
 
         <p>
