@@ -1237,8 +1237,8 @@
 
         <p class="post-actions">
           <a class="action-button" href="https://github.com/avakn5/AI-Misalignment" target="_blank" rel="noopener">GitHub repo &rarr;</a>
-          <a class="action-button" href="#" aria-disabled="true">Run samples &rarr;</a>
-          <a class="action-button" href="#" aria-disabled="true">System prompts &rarr;</a>
+          <a class="action-button" href="#" aria-disabled="true">Run samples (to come)</a>
+          <a class="action-button" href="coveragent-system-prompts.html">System prompts &rarr;</a>
         </p>
 
         <nav class="toc-inline" aria-label="Table of contents">
@@ -1991,6 +1991,16 @@ Ava Kouhana Blog, July 23rd 2026.</code></pre>
       localStorage.setItem(storageKey, JSON.stringify(comments.slice(0, 50)));
     };
 
+    const removeTestComments = () => {
+      const comments = readComments();
+      const filtered = comments.filter((comment) => {
+        const name = (comment.name || '').trim().toLowerCase();
+        const body = (comment.body || '').trim().toLowerCase();
+        return !(name === 'yonatan oren' && body === 'great');
+      });
+      if (filtered.length !== comments.length) writeComments(filtered);
+    };
+
     const renderComments = () => {
       const comments = readComments();
       list.textContent = '';
@@ -2045,6 +2055,7 @@ Ava Kouhana Blog, July 23rd 2026.</code></pre>
       renderComments();
     });
 
+    removeTestComments();
     renderComments();
   })();
 </script>
