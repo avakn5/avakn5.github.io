@@ -160,6 +160,17 @@
     margin-bottom: 6px;
   }
 
+  .section-heading-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+
+  .section-heading-row .section-title { margin-bottom: 0; }
+
   .section-rule {
     height: 2px;
     background: linear-gradient(to right, var(--cardinal), transparent);
@@ -375,7 +386,13 @@
       <h1>Ava Kouhana</h1>
       <p class="profile-subtitle">MS Student &mdash; Stanford ICME &middot; Computational &amp; Mathematical Engineering</p>
       <p>
-        I am completing my ICME master's at Stanford, graduating in June 2026. At Stanford, I research Reinforcement Learning and World Models in Professor Gordon Wetzstein's lab. Prior to Stanford, I spent six months at Harvard with <a href="https://wang.hms.harvard.edu/about-us/" target="_blank">Dr. Mengyu Wang</a> on image segmentation and vision-language models for medical imaging fairness, and another six months with <a href="https://med.stanford.edu/profiles/craig-levin" target="_blank">Dr. Craig Levin</a> applying latent diffusion models to PET image reconstruction.
+        Ava Kouhana completed her ICME master's at Stanford, graduated in June 2026. At Stanford, she research Reinforcement Learning and World Models in Professor Gordon Wetzstein's lab.
+        Outside from the lab, she decided to bridge the gap between the undergrad in Applied Maths, and a Computer Science degree, and took challenging classes : Operating System Design and Implementation (CS140E), Parallel Computing (CME 213), and also was a TA for the Machine Learning class (CS229). 
+        Prior to Stanford, spent six months at Harvard with <a href="https://wang.hms.harvard.edu/about-us/" target="_blank">Dr. Mengyu Wang</a> on image segmentation and vision-language models for medical imaging fairness, 
+        and another six months with <a href="https://med.stanford.edu/profiles/craig-levin" target="_blank">Dr. Craig Levin</a> applying latent diffusion models to PET image reconstruction.
+      </p>
+       <p>
+        Ava is looking for her next opportunity in research.
       </p>
       <div class="social-links">
         <a href="mailto:akouhana@stanford.edu">
@@ -536,7 +553,10 @@
 
   <!-- BLOG -->
   <section class="section">
-    <h2 class="section-title">Blog</h2>
+    <div class="section-heading-row">
+      <h2 class="section-title">Blog</h2>
+      <a class="link-btn" href="blog/index.html">Visit the blog</a>
+    </div>
     <hr class="section-rule">
     <div class="tag-row">
       <span class="tag">AI safety</span>
@@ -561,9 +581,6 @@
       Turning a single 1-bit GPIO pin into analog audio on bare metal &mdash; sigma-delta
       modulation, DMA, PWM, and interrupts.
     </p>
-    <div class="link-row">
-      <a class="link-btn" href="blog/">Visit the blog</a>
-    </div>
   </section>
 
   <!-- AWARDS -->
