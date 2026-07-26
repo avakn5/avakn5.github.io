@@ -20,8 +20,105 @@
 <style>
   :root { --analog: #2f7d6f; --analog-light: #edf6f4; --amber: #9a6a00; --amber-light: #fbf5e6; }
 
-  /* wider reading column for this post (blog default is 720px) */
-  .blog-wrapper { max-width: 880px; }
+  html { scroll-padding-top: 24px; }
+  .pidmasound-wrapper { max-width: 1120px; }
+  .article-grid {
+    align-items: start;
+    display: grid;
+    gap: 52px;
+    grid-template-columns: 220px minmax(0, 760px);
+  }
+  .post-article { max-width: 760px; }
+  .article-header { margin-bottom: 34px; }
+  .article-header h1 {
+    font-size: clamp(2.1rem, 4.8vw, 4.15rem);
+    line-height: .98;
+    margin-bottom: 16px;
+  }
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 1.18rem;
+    line-height: 1.65;
+    margin-bottom: 12px;
+  }
+  .byline {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .post-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0 0 24px;
+  }
+  .action-button {
+    align-items: center;
+    background: var(--cardinal);
+    border: 1px solid var(--cardinal);
+    border-radius: var(--radius);
+    color: #fff;
+    display: inline-flex;
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 38px;
+    padding: 8px 14px;
+  }
+  .action-button:hover {
+    background: #7a1212;
+    border-color: #7a1212;
+    color: #fff;
+    text-decoration: none;
+  }
+  .toc {
+    font-size: 13px;
+    padding-top: 2px;
+    position: sticky;
+    top: 22px;
+  }
+  .toc h2, .toc-inline h2 {
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+  }
+  .toc ol, .toc-inline ol {
+    list-style: decimal;
+    margin: 0 0 0 1.2em;
+    padding: 0;
+  }
+  .toc li, .toc-inline li {
+    line-height: 1.35;
+    margin-bottom: 8px;
+  }
+  .toc a, .toc-inline a { color: var(--text-secondary); }
+  .toc a:hover, .toc-inline a:hover {
+    color: var(--cardinal);
+    text-decoration: none;
+  }
+  .toc-inline {
+    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+    display: none;
+    margin: 22px 0 30px;
+    padding: 18px 0;
+  }
+  .post-article h2 {
+    font-size: 1.65rem;
+    margin-top: 46px;
+    padding-top: 4px;
+  }
+  .post-article h3 {
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+    font-size: .86rem;
+    letter-spacing: .04em;
+    margin: 34px 0 10px;
+    text-transform: uppercase;
+  }
 
   /* smaller, centered hero photo */
   .hero-shot img { max-width: 400px; margin-left: auto; margin-right: auto; }
@@ -31,39 +128,98 @@
   .scope-grid img { width: 100%; border-radius: 6px; border: 1px solid var(--border); margin: 0; }
   @media (max-width: 620px) { .scope-grid { grid-template-columns: 1fr; } }
 
-  /* reader comments */
-  .comments { margin-top: 52px; padding-top: 28px; border-top: 1px solid var(--border); }
-  .comments h2 { font-family: 'EB Garamond', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 6px; }
-  .comments-intro { font-size: 14px; color: var(--text-secondary); margin-bottom: 14px; }
-
-  /* approved comment list */
-  .comment-list { list-style: none; margin: 0; padding: 0; }
-  .comment { padding: 14px 0; border-bottom: 1px solid var(--border); }
-  .comment-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
-  .comment-name { font-weight: 600; font-size: 14px; }
-  .comment-date { font-size: 12px; color: var(--text-muted); }
-  .comment-body { font-size: 14.5px; margin: 0; }
-  .comment-empty { font-size: 14px; color: var(--text-muted); font-style: italic; margin: 4px 0 24px; }
-
-  /* comment form */
-  .comment-form-title { font-family: 'EB Garamond', serif; font-size: 1.2rem; font-weight: 600; margin: 26px 0 4px; }
-  .comment-form { max-width: 560px; }
-  .cf-field { display: block; margin-bottom: 14px; }
-  .cf-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 5px; }
-  .cf-label em { font-weight: 400; color: var(--text-muted); font-style: italic; }
-  .comment-form input[type=text], .comment-form textarea {
-    width: 100%; font: inherit; font-size: 14px; color: var(--text);
-    background: var(--white); border: 1px solid var(--border); border-radius: 8px;
-    padding: 9px 12px; resize: vertical;
+  .comment-section {
+    border-top: 1px solid var(--border);
+    margin-top: 34px;
+    padding-top: 28px;
   }
-  .comment-form input[type=text]:focus, .comment-form textarea:focus { outline: none; border-color: var(--cardinal); }
-  .cf-submit {
-    font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
-    color: #fff; background: var(--cardinal); border: none; border-radius: 8px; padding: 9px 20px;
+  .comment-form {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: grid;
+    gap: 14px;
+    margin: 18px 0;
+    padding: 16px;
   }
-  .cf-submit:hover { background: #7a1212; }
+  .comment-form label {
+    color: var(--text-secondary);
+    display: grid;
+    font-size: 12px;
+    font-weight: 600;
+    gap: 6px;
+  }
+  .comment-form input,
+  .comment-form textarea {
+    background: #fffaf2;
+    border: 1px solid #eadbc4;
+    border-radius: var(--radius);
+    color: var(--text);
+    font: inherit;
+    padding: 10px 12px;
+    width: 100%;
+  }
+  .comment-form textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  .comment-submit {
+    background: var(--cardinal);
+    border: 1px solid var(--cardinal);
+    border-radius: var(--radius);
+    color: #fff;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    justify-self: start;
+    padding: 9px 14px;
+  }
+  .comment-submit:hover {
+    background: #7a1212;
+    border-color: #7a1212;
+  }
+  .comment-note,
+  .comment-empty {
+    color: var(--text-muted);
+    font-size: 12.5px;
+    margin: 0;
+  }
+  .comment-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .comment-item {
+    background: #fffaf2;
+    border: 1px solid #eadbc4;
+    border-radius: var(--radius);
+    padding: 13px 14px;
+  }
+  .comment-meta {
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .comment-meta strong {
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+  }
+  .comment-meta time {
+    color: var(--text-muted);
+    font-size: 11.5px;
+  }
+  .comment-text {
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    line-height: 1.55;
+    margin: 0;
+    white-space: pre-wrap;
+  }
 
-  .lede { font-size: 1.12rem; color: var(--text-secondary); }
   .post-article strong { font-weight: 600; }
 
   /* editor's note — only visible in the private draft */
@@ -80,8 +236,19 @@
   .draft-note ul { margin: 8px 0 0 1.2em; }
 
   /* figure + caption wrapper */
-  figure { margin: 30px 0; }
+  figure { margin: 30px auto; }
+  figure.wide {
+    margin-left: 50%;
+    transform: translateX(-50%);
+    width: min(900px, calc(100vw - 48px));
+  }
   figure svg, figure img { display: block; width: 100%; height: auto; }
+  figure img {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 0 auto;
+  }
   figcaption {
     font-size: 12.5px; color: var(--text-muted); text-align: center;
     margin-top: 10px; font-style: italic; line-height: 1.5;
@@ -204,6 +371,22 @@
   }
   .small-cap { font-size: 12px; color: var(--analog); margin-top: 8px; min-height: 16px; opacity: 0; transition: opacity .6s; font-weight: 500; }
 
+  @media (max-width: 980px) {
+    .pidmasound-wrapper { max-width: 820px; }
+    .article-grid { display: block; }
+    .toc { display: none; }
+    .toc-inline { display: block; }
+    .post-article { max-width: none; }
+  }
+
+  @media (max-width: 760px) {
+    figure.wide {
+      margin-left: auto;
+      transform: none;
+      width: 100%;
+    }
+  }
+
   @media (max-width: 600px) {
     .specs { grid-template-columns: repeat(2, 1fr); }
     .node { min-width: 42%; }
@@ -214,22 +397,62 @@
 </head>
 
 <body>
-<div class="blog-wrapper">
+<div class="blog-wrapper pidmasound-wrapper">
 
   <nav class="blog-nav"><a href="index.html">&larr; Blog</a></nav>
 
-  <article class="post-article">
-    <p class="post-meta">Bare-metal systems &nbsp;·&nbsp; Personal project &nbsp;·&nbsp; Stanford CS140E</p>
+  <div class="article-grid">
+    <aside class="toc" aria-label="Table of contents">
+      <h2>Table of contents</h2>
+      <ol>
+        <li><a href="#core-problem">The core problem</a></li>
+        <li><a href="#bare-metal-constraints">Bare-metal constraints</a></li>
+        <li><a href="#sigma-delta">From samples to 1-bit</a></li>
+        <li><a href="#dma">Why DMA?</a></li>
+        <li><a href="#pwm">Why PWM?</a></li>
+        <li><a href="#interrupt-refill">Interrupt-driven refill</a></li>
+        <li><a href="#rc-filter">Back to analog</a></li>
+        <li><a href="#hearing-it-work">Hearing it work</a></li>
+        <li><a href="#comments">Comments</a></li>
+      </ol>
+    </aside>
 
-    <h1>PiDMASound: Bare-Metal Audio on a Raspberry Pi</h1>
+    <article class="post-article" id="article">
+      <header class="article-header">
+        <p class="post-meta">Bare-metal systems &nbsp;&middot;&nbsp; Personal project &nbsp;&middot;&nbsp; Stanford CS140E</p>
 
-    <p class="lede">
-      If no one had ever coded an OS before, how would you get music out of a Raspberry Pi? GPIO pins can only output 
-       <strong>0&nbsp;V or 3.3&nbsp;V</strong>. So how do you turn a single digital pin into analog sound?
-    </p>
+        <h1>PiDMASound: Bare-Metal Audio on a Raspberry Pi</h1>
 
-    <!-- ============================ THE PROBLEM ============================ -->
-    <h2>The core problem</h2>
+        <p class="subtitle">
+          If no one had ever coded an OS before, how would you get music out of a Raspberry Pi? GPIO pins can only output <strong>0&nbsp;V or 3.3&nbsp;V</strong>. So how do you turn a single digital pin into analog sound?
+        </p>
+
+        <p class="byline">By Ava Kouhana &middot; March 2026</p>
+
+        <p class="post-actions">
+          <a class="action-button" href="https://github.com/avakn5/PiDMASound" target="_blank" rel="noopener">GitHub repo &rarr;</a>
+          <a class="action-button" href="https://htmlpreview.github.io/?https://github.com/avakn5/PiDMASound/blob/main/slides/new_slides.html" target="_blank" rel="noopener">Project slides &rarr;</a>
+          <a class="action-button" href="#hearing-it-work">Demo video &rarr;</a>
+        </p>
+
+        <nav class="toc-inline" aria-label="Table of contents">
+          <h2>Table of contents</h2>
+          <ol>
+            <li><a href="#core-problem">The core problem</a></li>
+            <li><a href="#bare-metal-constraints">Bare-metal constraints</a></li>
+            <li><a href="#sigma-delta">From samples to 1-bit</a></li>
+            <li><a href="#dma">Why DMA?</a></li>
+            <li><a href="#pwm">Why PWM?</a></li>
+            <li><a href="#interrupt-refill">Interrupt-driven refill</a></li>
+            <li><a href="#rc-filter">Back to analog</a></li>
+            <li><a href="#hearing-it-work">Hearing it work</a></li>
+            <li><a href="#comments">Comments</a></li>
+          </ol>
+        </nav>
+      </header>
+
+      <section id="core-problem">
+        <h2>The core problem</h2>
     <p>
       Last winter I took <strong>CS140E</strong> at Stanford &mdash; building an operating
       system on a Raspberry Pi from scratch &mdash; with the wonderful Dawson Engler.
@@ -253,7 +476,7 @@
       way to a speaker, crossing from the digital into world after the low-pass filter. 
     </p>
 
-    <figure>
+    <figure class="wide">
       <div class="chain">
         <div class="node d"><div class="n-title">PCM</div><div class="n-sub">16-bit · 44.1 kHz</div></div>
         <span class="arrow">→</span>
@@ -277,18 +500,22 @@
       </div>
       <figcaption> Sounds like a scary system, but it's actually easier than it looks. We will talk about each step. Everything up to GPIO 18 is digital; the RC filter is where the bitstream becomes an analog voltage, the system replaces an OS DAC (Digital-to-analog signal)</figcaption>
     </figure>
+      </section>
 
-    <!-- ============================ WHY BARE METAL ============================ -->
-    <h2>What are the constraints of using bare metal?</h2>
+      <section id="bare-metal-constraints">
+        <h2>What are the constraints of using bare metal?</h2>
     <p>
       Let's avoid talking about the Broadcom BCM2835 datasheet torture, which is, no doubt, a disadvantage in life on
       its own. 
       Without an OS, the only way to make an analog voltage is to build a DAC (Digital-to-Analog Converter) yourself:
       generate a fast stream of 1s and 0s whose average is the voltage you want, and let a resistor-capacitor (RC) filter do the averaging.
-      Amonst the hardest constraint is the CPU pace, but we will talk about it later.
+      Among the hardest constraints is the CPU pace, but we will talk about it later.
+    </p>
+      </section>
 
     <!-- ============================ PART II ============================ -->
-    <h2>From 16-bit samples to a 1-bit stream</h2>
+      <section id="sigma-delta">
+        <h2>From 16-bit samples to a 1-bit stream</h2>
     <p>
       Audio starts as <strong>PCM</strong> (Pulse-Code Modulation): a standard representation
       where each sample is a number storing the waveform's amplitude at one instant. Here, we start with the standard
@@ -385,7 +612,7 @@ void sigma_delta_modulate_n(const short *pcm_in, unsigned n_samples,
       RAM, then play it out. It works, but it's suboptimal for 3 reasons:
     </p>
     <ul>
-      <li>You must precompute the entire song</strong> before a single note plays.</li>
+      <li>You must precompute the entire song before a single note plays.</li>
       <li>It wastes RAM memory; roughly <strong>20&nbsp;MB per minute</strong> of audio.</li>
       <li>You can't generate live music/ on-the-fly</li>
     </ul>
@@ -417,7 +644,7 @@ double buffer      : 2 × one small block   ≈ constant, plays forever</code></
       every interrupt &mdash; DMA plays one while the CPU refills the other, forever:
     </p>
 
-    <figure>
+    <figure class="wide">
       <div class="bufcompare" id="bufcompare">
 
         <!-- LEFT: one huge buffer -->
@@ -462,9 +689,10 @@ double buffer      : 2 × one small block   ≈ constant, plays forever</code></
         which one the DMA plays and which the CPU refills. Constant memory, forever.
       </figcaption>
     </figure>
+      </section>
 
-    <!-- ============================ WHY DMA ============================ -->
-    <h2>Why DMA?</h2>
+      <section id="dma">
+        <h2>Why DMA?</h2>
     <p>
       Could the CPU just toggle the pin itself? To hit live-quality audio the
       PDM stream runs at <strong>2,822,400 bits per second</strong>. That's one pin update
@@ -477,7 +705,7 @@ double buffer      : 2 × one small block   ≈ constant, plays forever</code></
     <p>
       At that rate, the bare-metal CPU would be monopolized entirely by that task. This is exactly
       what <strong>DMA</strong> (Direct Memory Access) is for: a hardware engine that moves
-      bytes from memory to a periphera without using the CPU, with deterministic timing.
+      bytes from memory to a peripheral without using the CPU, with deterministic timing.
       DMA streams the PDM buffers straight into the PWM hardware, which clocks them onto GPIO&nbsp;18.
     </p>
     <div class="callout">
@@ -503,12 +731,13 @@ double buffer      : 2 × one small block   ≈ constant, plays forever</code></
         Screenshots from my oscilloscope which was supposed to display a sinewave while I was trying to debug it.
       </figcaption>
     </figure>
+      </section>
 
-    <!-- ============================ WHY PWM ============================ -->
-    <h2>Why PWM? Clocking and timing</h2>
+      <section id="pwm">
+        <h2>Why PWM? Clocking and timing</h2>
     <p>
-      The Pulse-width modulation (PWM) peripheral is used here in serializer mode. It's role is to shift individual bits out of its FIFO
-      straight onto the pin &mdash; each bit becomes one high or low pulse. It's the PWM that paces the DMA for bits to live the pin at exactly the correct rate 
+      The Pulse-width modulation (PWM) peripheral is used here in serializer mode. Its role is to shift individual bits out of its FIFO
+      straight onto the pin &mdash; each bit becomes one high or low pulse. It's the PWM that paces the DMA for bits to leave the pin at exactly the correct rate
       for the sound to be recognizable for our ears. 
     </p>
 
@@ -518,7 +747,7 @@ double buffer      : 2 × one small block   ≈ constant, plays forever</code></
 = PDM bit rate    2.8224 MHz       # = 44.1 kHz × 64  →  44.1 kHz audio</code></pre>
 
     <p>
-       The target pace is <strong> roughly 44,100 samples/second</strong>; if the pace is not this one, the pitch and quality will sound off. 
+      The target pace is <strong>roughly 44,100 samples/second</strong>; if the pace is not this one, the pitch and quality will sound off.
     </p>
 
     <div class="specs">
@@ -527,9 +756,10 @@ double buffer      : 2 × one small block   ≈ constant, plays forever</code></
       <div class="spec"><div class="s-val">2.8224 MHz</div><div class="s-label">PDM bit rate</div></div>
       <div class="spec"><div class="s-val">354 ns</div><div class="s-label">per-bit budget</div></div>
     </div>
+      </section>
 
-    <!-- ============================ IRQ REFILL ============================ -->
-    <h2>Interrupt-driven refill</h2>
+      <section id="interrupt-refill">
+        <h2>Interrupt-driven refill</h2>
     <p>
       Each time the DMA finishes a buffer it raises an interrupt &mdash; roughly
       <strong>2,756 times per second</strong>. That interrupt signifies that the other buffer should be used to push bits through GPIO 18.
@@ -596,12 +826,14 @@ void interrupt_vector(unsigned pc) {
     }
 }</code></pre>
 
-    <!-- ============================ RC FILTER ============================ -->
-    <h2>Back to analog: the RC filter</h2>
+      </section>
+
+      <section id="rc-filter">
+        <h2>Back to analog: the RC filter</h2>
     <p>
       Everything so far produces a clean, fast digital pulse train on GPIO&nbsp;18. The
       final step &mdash; the only analog part of the whole build &mdash; is a single-pole
-      <strong>RC low-pass filter</strong> that averages those pulses into a smooth voltage: continous sound. Its
+      <strong>RC low-pass filter</strong> that averages those pulses into a smooth voltage: continuous sound. Its
       cutoff has to sit in the gap between two rates: well above the audio you want to
       keep (up to ~20&nbsp;kHz) and well below the 2.8&nbsp;MHz PDM carrier you want to
       erase.
@@ -609,8 +841,10 @@ void interrupt_vector(unsigned pc) {
 
 <pre><code>f_cutoff = 1 / (2π · R · C)     # aim between 20 kHz and 2.8 MHz</code></pre>
 
-    <!-- ============================ HEARING IT WORK ============================ -->
-    <h2>Hearing it work</h2>
+      </section>
+
+      <section id="hearing-it-work">
+        <h2>Hearing it work</h2>
 
     <figure>
       <video controls playsinline preload="metadata"
@@ -624,7 +858,7 @@ void interrupt_vector(unsigned pc) {
 
     <h3>So, does it actually sound good?</h3>
     <p>
-      I think the answer is that I wouldnt use it for my daily listen of Amy Winehouse, but given the constraint, not bad !
+      I think the answer is that I wouldn&rsquo;t use it for my daily listen of Amy Winehouse, but given the constraint, not bad!
     </p>
 
     <p>
@@ -636,47 +870,115 @@ void interrupt_vector(unsigned pc) {
       <a href="https://htmlpreview.github.io/?https://github.com/avakn5/PiDMASound/blob/main/slides/new_slides.html" target="_blank" rel="noopener">Project slides →</a>
     </p>
 
-    <!-- ============================ COMMENTS ============================ -->
-    <section class="comments" id="comments">
-      <h2>Comments</h2>
+      </section>
 
-      <!-- Approved comments go here. When Ava forwards one, add an <li> like the sample below. -->
-      <ol class="comment-list">
-        <!--
-        <li class="comment">
-          <div class="comment-head"><span class="comment-name">Reader name</span><span class="comment-date">Jul 2026</span></div>
-          <p class="comment-body">Their comment text goes here.</p>
-        </li>
-        -->
-      </ol>
-      <p class="comment-empty">No comments yet.</p>
-
-      <h3 class="comment-form-title">Leave a comment</h3>
-
-      <form class="comment-form" action="https://formsubmit.co/avakouh@gmail.com" method="POST">
-        <input type="hidden" name="_subject" value="New comment on PiDMASound">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_next" value="https://avakn5.github.io/blog/first-post.html#comments">
-        <!-- spam honeypot: bots fill this, humans don't see it -->
-        <input type="text" name="_honey" style="display:none">
-
-        <label class="cf-field">
-          <span class="cf-label">Name</span>
-          <input type="text" name="name" autocomplete="name">
-        </label>
-        <label class="cf-field">
-          <span class="cf-label">Comment</span>
-          <textarea name="comment" rows="5" required placeholder="Your thoughts, questions, corrections…"></textarea>
-        </label>
-        <button type="submit" class="cf-submit">Send comment</button>
-      </form>
-    </section>
-
-  </article>
+      <section id="comments" class="comment-section">
+        <h2>Comments</h2>
+        <form class="comment-form" id="comment-form">
+          <label for="comment-name">
+            Name
+            <input id="comment-name" name="name" type="text" maxlength="80" autocomplete="name" required>
+          </label>
+          <label for="comment-body">
+            Comment
+            <textarea id="comment-body" name="comment" maxlength="1000" required></textarea>
+          </label>
+          <button class="comment-submit" type="submit">Post comment</button>
+          <p class="comment-note">Comments are saved locally in this browser.</p>
+        </form>
+        <div class="comment-list" id="comment-list" aria-live="polite"></div>
+      </section>
+    </article>
+  </div>
 
   <footer class="blog-footer">&copy; 2026 Ava Kouhana</footer>
 
 </div>
+
+<script>
+  (() => {
+    const form = document.getElementById('comment-form');
+    const list = document.getElementById('comment-list');
+    const nameInput = document.getElementById('comment-name');
+    const bodyInput = document.getElementById('comment-body');
+    const storageKey = 'pidmasound-comments-v1';
+    const dateFormat = new Intl.DateTimeFormat(undefined, {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+
+    if (!form || !list || !nameInput || !bodyInput) return;
+
+    const readComments = () => {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    };
+
+    const writeComments = (comments) => {
+      localStorage.setItem(storageKey, JSON.stringify(comments.slice(0, 50)));
+    };
+
+    const renderComments = () => {
+      const comments = readComments();
+      list.textContent = '';
+
+      if (!comments.length) {
+        const empty = document.createElement('p');
+        empty.className = 'comment-empty';
+        empty.textContent = 'No comments yet.';
+        list.append(empty);
+        return;
+      }
+
+      comments.forEach((comment) => {
+        const item = document.createElement('article');
+        item.className = 'comment-item';
+
+        const meta = document.createElement('div');
+        meta.className = 'comment-meta';
+
+        const name = document.createElement('strong');
+        name.textContent = comment.name || 'Anonymous';
+
+        const time = document.createElement('time');
+        time.dateTime = comment.createdAt || '';
+        time.textContent = comment.createdAt ? dateFormat.format(new Date(comment.createdAt)) : '';
+
+        const text = document.createElement('p');
+        text.className = 'comment-text';
+        text.textContent = comment.body || '';
+
+        meta.append(name, time);
+        item.append(meta, text);
+        list.append(item);
+      });
+    };
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const name = nameInput.value.trim();
+      const body = bodyInput.value.trim();
+      if (!name || !body) return;
+
+      const comments = readComments();
+      comments.unshift({
+        name,
+        body,
+        createdAt: new Date().toISOString()
+      });
+      writeComments(comments);
+      form.reset();
+      renderComments();
+    });
+
+    renderComments();
+  })();
+</script>
 
 <!-- Buffer-comparison animation (ported from the PiDMASound slides). Self-contained. -->
 <script>
