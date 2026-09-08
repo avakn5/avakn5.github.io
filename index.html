@@ -4,18 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ava Kouhana</title>
-<meta name="description" content="Ava Kouhana — MS student at Stanford ICME researching reinforcement learning, world models, and medical imaging. Publications, projects, and writing.">
+<meta name="description" content="Ava Kouhana — former MS student at Stanford ICME researching reinforcement learning, world models, and medical imaging. Publications, projects, and writing.">
 
 <!-- Social / search preview image (so previews use the profile photo, not a poster) -->
 <meta property="og:type" content="profile">
 <meta property="og:title" content="Ava Kouhana">
-<meta property="og:description" content="MS student at Stanford ICME — reinforcement learning, world models, and medical imaging.">
+<meta property="og:description" content="Former MS student at Stanford ICME — reinforcement learning, world models, and medical imaging.">
 <meta property="og:url" content="https://avakn5.github.io/">
 <meta property="og:image" content="https://avakn5.github.io/AboutPageAssets/images/profile1.jpeg">
 <meta property="og:image:alt" content="Ava Kouhana">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Ava Kouhana">
-<meta name="twitter:description" content="MS student at Stanford ICME — reinforcement learning, world models, and medical imaging.">
+<meta name="twitter:description" content="Former MS student at Stanford ICME — reinforcement learning, world models, and medical imaging.">
 <meta name="twitter:image" content="https://avakn5.github.io/AboutPageAssets/images/profile1.jpeg">
 
 <script type="application/ld+json">
@@ -25,13 +25,13 @@
   "name": "Ava Kouhana",
   "url": "https://avakn5.github.io/",
   "image": "https://avakn5.github.io/AboutPageAssets/images/profile1.jpeg",
-  "jobTitle": "MS Student",
+  "jobTitle": "Former MS Student",
   "affiliation": { "@type": "Organization", "name": "Stanford ICME" }
 }
 </script>
 
 <link rel="icon" type="image/png" href="https://www-media.stanford.edu/assets/favicon/favicon-32x32.png" sizes="32x32">
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -222,6 +222,51 @@
 
   .tag-row .tag { margin-bottom: 0; }
 
+  /* EDUCATION */
+  .education-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .education-entry {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .education-entry:first-child { padding-top: 0; }
+  .education-entry:last-child { padding-bottom: 0; border-bottom: 0; }
+
+  .education-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 3px;
+  }
+
+  .education-school {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.12rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .education-dates {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  .education-degree, .education-detail, .education-coursework {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .education-degree { font-weight: 500; margin-bottom: 6px; }
+  .education-detail { margin-bottom: 6px; }
+  .education-coursework em { color: var(--text); }
+
   /* PUBLICATIONS */
   .pub-list { display: flex; flex-direction: column; gap: 28px; }
 
@@ -353,6 +398,67 @@
     flex-shrink: 0;
   }
 
+  /* SUBSCRIBE */
+  .subscribe-card {
+    margin-top: 26px;
+    padding: 22px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .subscribe-card h3 {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.12rem;
+    margin-bottom: 3px;
+  }
+
+  .subscribe-card p {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+
+  .subscribe-form { display: flex; gap: 8px; }
+
+  .subscribe-form input[type="email"] {
+    min-width: 0;
+    flex: 1;
+    font: inherit;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 9px 11px;
+  }
+
+  .subscribe-form input[type="email"]:focus {
+    outline: 2px solid rgba(140, 21, 21, 0.2);
+    border-color: var(--cardinal);
+  }
+
+  .subscribe-form button {
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    background: var(--cardinal);
+    border: 1px solid var(--cardinal);
+    border-radius: 4px;
+    padding: 9px 16px;
+    cursor: pointer;
+  }
+
+  .subscribe-form button:hover { background: #701111; }
+
+  .subscribe-note {
+    display: block;
+    color: var(--text-muted);
+    font-size: 10.5px;
+    margin-top: 8px;
+  }
+
   /* FOOTER */
   footer {
     border-top: 1px solid var(--border);
@@ -370,6 +476,9 @@
     .pub-thumb { width: 100%; min-width: unset; }
     .project-card { flex-direction: column; }
     .project-img { width: 100%; min-width: unset; height: 160px; }
+    .education-heading { align-items: flex-start; flex-direction: column; gap: 2px; }
+    .subscribe-form { flex-direction: column; }
+    .subscribe-form button { width: 100%; }
   }
 </style>
 </head>
@@ -384,17 +493,18 @@
     </div>
     <div class="profile-info">
       <h1>Ava Kouhana</h1>
-      <p class="profile-subtitle">MS Student &mdash; Stanford ICME &middot; Computational &amp; Mathematical Engineering</p>
+      <p class="profile-subtitle">Former MS Student &mdash; Stanford ICME &middot; Computational &amp; Mathematical Engineering</p>
       <p>
-        Ava Kouhana completed her ICME master's at Stanford, graduated in June 2026. At Stanford, she researched Reinforcement Learning and World Models in Professor Gordon Wetzstein's lab.
-        Outside from the lab, she decided to bridge the gap between her undergrad in Applied Maths, and a Computer Science degree, and took challenging classes : Operating System Design and Implementation (CS140E), Parallel Computing (CME 213), and also was a TA for the Machine Learning class (CS229). 
-        Prior to Stanford, spent six months at Harvard with <a href="https://wang.hms.harvard.edu/about-us/" target="_blank">Dr. Mengyu Wang</a> on image segmentation and vision-language models for medical imaging fairness, 
-        and another six months with <a href="https://med.stanford.edu/profiles/craig-levin" target="_blank">Dr. Craig Levin</a> applying latent diffusion models to PET image reconstruction.
+        I completed my ICME master's at Stanford in June 2026, where I researched reinforcement learning and world models in Professor Gordon Wetzstein's lab.
+        Beyond the lab, I built on my undergraduate background in applied mathematics through courses including Operating Systems Design and Implementation (CS140E) and Parallel Computing (CME 213), and I served as a teaching assistant for Machine Learning (CS229).
+        Before Stanford, I spent six months at Harvard with <a href="https://wang.hms.harvard.edu/about-us/" target="_blank">Dr. Mengyu Wang</a> working on image segmentation and vision-language models for fairness in medical imaging,
+        followed by six months with <a href="https://med.stanford.edu/profiles/craig-levin" target="_blank">Dr. Craig Levin</a> applying latent diffusion models to PET image reconstruction.
       </p>
-       <p>
-        Ava is looking for her next opportunity in industry.
+      <p>
+        I am currently looking for my next opportunity in industry.
       </p>
       <div class="social-links">
+        <a href="bio.html">Bio</a>
         <a href="mailto:akouhana@stanford.edu">
           <img src="AboutPageAssets/images/mail.png" alt=""> Email
         </a>
@@ -404,7 +514,7 @@
         <a href="https://github.com/avakn5" target="_blank">
           <img src="AboutPageAssets/images/github.png" alt=""> GitHub
         </a>
-        <a href="https://scholar.google.com/citations?user=nxESuB0AAAAJ&hl=fr" target="_blank">
+        <a href="https://scholar.google.com/citations?user=nxESuB0AAAAJ&amp;hl=fr" target="_blank">
           <img src="AboutPageAssets/images/scholar.jpg" alt=""> Scholar
         </a>
         <!-- <a href="https://profiles.stanford.edu/ava-kouhana" target="_blank">
@@ -413,6 +523,32 @@
       </div>
     </div>
   </header>
+
+  <!-- EDUCATION -->
+  <section class="section">
+    <h2 class="section-title">Education</h2>
+    <hr class="section-rule">
+    <div class="education-list">
+      <article class="education-entry">
+        <div class="education-heading">
+          <h3 class="education-school">Stanford University</h3>
+          <span class="education-dates">Fall 2024&ndash;June 2026</span>
+        </div>
+        <p class="education-degree">M.S. in Computational &amp; Mathematical Engineering</p>
+        <p class="education-detail">Graduate Teaching Assistant for CS229: Machine Learning, Fall 2025.</p>
+        <p class="education-coursework"><em>Relevant coursework:</em> Deep Reinforcement Learning (CS224R), Operating Systems Design and Implementation (CS140E), Parallel Computing using CUDA (CME213), and Numerical Linear Algebra (CME302).</p>
+      </article>
+      <article class="education-entry">
+        <div class="education-heading">
+          <h3 class="education-school">ENSAE Paris</h3>
+          <span class="education-dates">2021&ndash;2024</span>
+        </div>
+        <p class="education-degree">Bachelor's degree in Applied Mathematics</p>
+        <p class="education-detail">Admitted through a competitive mathematics entrance examination, ranking in the top 15 of approximately 7,000 candidates.</p>
+        <p class="education-coursework"><em>Relevant coursework:</em> Statistics, Monte Carlo Simulation, Linear Algebra, Measure Theory, and Optimization.</p>
+      </article>
+    </div>
+  </section>
 
   <!-- PUBLICATIONS -->
   <section class="section">
@@ -502,7 +638,6 @@
               <span class="tag">Alignment</span>
             </div>
             <h3 class="project-title">CoverAgent &mdash; Multi-Agent Collision in Responsibility Attribution</h3>
-            <p class="project-meta">In progress</p>
             <p class="project-desc">Studying whether LLM agents preserve accurate responsibility attribution when a peer agent pressures them to obscure its own role in an incident. The harness probes how human-facing reports change under multi-agent peer pressure.</p>
           </div>
           <div class="link-row">
@@ -581,6 +716,21 @@
       Turning a single 1-bit GPIO pin into analog audio on bare metal &mdash; sigma-delta
       modulation, DMA, PWM, and interrupts.
     </p>
+
+    <div class="subscribe-card" id="subscribe">
+      <h3>Subscribe to new posts</h3>
+      <p>Get an email when I publish something new.</p>
+      <form class="subscribe-form" action="https://formsubmit.co/akouhana@stanford.edu" method="POST">
+        <label for="home-subscribe-email" style="position:absolute;left:-10000px;">Email address</label>
+        <input id="home-subscribe-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        <input type="hidden" name="_subject" value="New Ava Kouhana blog subscriber">
+        <input type="hidden" name="_autoresponse" value="Thanks for subscribing to my blog. I will email you when I publish something new. — Ava">
+        <input type="hidden" name="subscription" value="Ava Kouhana blog">
+        <input type="text" name="_honey" style="display:none">
+        <button type="submit">Subscribe</button>
+      </form>
+      <span class="subscribe-note">Occasional updates only. Your email will be used only for blog updates.</span>
+    </div>
   </section>
 
   <!-- AWARDS -->

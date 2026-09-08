@@ -6,7 +6,7 @@
 <title>Blog — Ava Kouhana</title>
 <meta name="description" content="Writing by Ava Kouhana on AI safety, reinforcement learning, systems, and world models.">
 <link rel="icon" type="image/png" href="https://www-media.stanford.edu/assets/favicon/favicon-32x32.png" sizes="32x32">
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="blog.css">
 </head>
 
@@ -41,6 +41,21 @@
       <p>Turning a single 1-bit GPIO pin into analog audio on bare metal &mdash; sigma-delta modulation, DMA, PWM, and interrupts.</p>
     </div>
   </div>
+
+  <section class="subscribe-card" id="subscribe" aria-labelledby="subscribe-title">
+    <h2 id="subscribe-title">Subscribe to new posts</h2>
+    <p>Get an email when I publish something new.</p>
+    <form class="subscribe-form" action="https://formsubmit.co/akouhana@stanford.edu" method="POST">
+      <label for="blog-subscribe-email" class="visually-hidden">Email address</label>
+      <input id="blog-subscribe-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+      <input type="hidden" name="_subject" value="New Ava Kouhana blog subscriber">
+      <input type="hidden" name="_autoresponse" value="Thanks for subscribing to my blog. I will email you when I publish something new. — Ava">
+      <input type="hidden" name="subscription" value="Ava Kouhana blog">
+      <input type="text" name="_honey" class="honeypot" tabindex="-1" autocomplete="off">
+      <button type="submit">Subscribe</button>
+    </form>
+    <span class="subscribe-note">Occasional updates only. Your email will be used only for blog updates.</span>
+  </section>
 
   <footer class="blog-footer">&copy; 2026 Ava Kouhana</footer>
 
