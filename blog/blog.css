@@ -124,12 +124,6 @@ a:hover { text-decoration: underline; }
   cursor: pointer;
 }
 .subscribe-form button:hover { background: #701111; }
-.subscribe-note {
-  display: block;
-  color: var(--text-muted);
-  font-size: 11px;
-  margin-top: 8px;
-}
 .visually-hidden {
   position: absolute;
   width: 1px;

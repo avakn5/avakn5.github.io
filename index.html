@@ -149,6 +149,59 @@
     flex: 0 0 14px;
   }
 
+  /* PAGE MENU */
+  .side-menu {
+    position: fixed;
+    top: 110px;
+    right: 22px;
+    width: 156px;
+    z-index: 20;
+    font-size: 12px;
+  }
+
+  .side-menu summary {
+    display: block;
+    cursor: pointer;
+    color: var(--cardinal);
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 7px 13px;
+    font-weight: 600;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.07);
+    list-style: none;
+    text-align: center;
+  }
+
+  .side-menu summary::-webkit-details-marker { display: none; }
+  .side-menu summary::after { content: " +"; }
+  .side-menu[open] summary::after { content: " −"; }
+
+  .side-menu nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 8px;
+    padding: 8px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .side-menu nav a {
+    color: var(--text-secondary);
+    padding: 7px 9px;
+    border-radius: 4px;
+    text-decoration: none;
+  }
+
+  .side-menu nav a:hover,
+  .side-menu nav a:focus {
+    color: var(--cardinal);
+    background: var(--cardinal-light);
+  }
+
   /* SECTIONS */
   .section { margin-bottom: 52px; }
 
@@ -229,12 +282,32 @@
   }
 
   .education-entry {
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    gap: 20px;
+    align-items: center;
     padding: 20px 0;
     border-bottom: 1px solid var(--border);
   }
 
   .education-entry:first-child { padding-top: 0; }
   .education-entry:last-child { padding-bottom: 0; border-bottom: 0; }
+
+  .education-logo {
+    width: 104px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--white);
+    overflow: hidden;
+  }
+
+  .education-logo img { display: block; max-width: 78px; max-height: 56px; object-fit: contain; }
+  .education-logo.ensae { background: #7f1720; border-color: #7f1720; }
+  .education-logo.ensae img { max-width: 92px; max-height: 48px; }
 
   .education-heading {
     display: flex;
@@ -257,15 +330,13 @@
     font-size: 12px;
   }
 
-  .education-degree, .education-detail, .education-coursework {
+  .education-degree {
     color: var(--text-secondary);
     font-size: 13px;
     line-height: 1.55;
   }
 
-  .education-degree { font-weight: 500; margin-bottom: 6px; }
-  .education-detail { margin-bottom: 6px; }
-  .education-coursework em { color: var(--text); }
+  .education-degree { font-weight: 500; }
 
   /* PUBLICATIONS */
   .pub-list { display: flex; flex-direction: column; gap: 28px; }
@@ -452,13 +523,6 @@
 
   .subscribe-form button:hover { background: #701111; }
 
-  .subscribe-note {
-    display: block;
-    color: var(--text-muted);
-    font-size: 10.5px;
-    margin-top: 8px;
-  }
-
   /* FOOTER */
   footer {
     border-top: 1px solid var(--border);
@@ -470,12 +534,17 @@
 
   /* RESPONSIVE */
   @media (max-width: 600px) {
+    .side-menu { top: 14px; right: 14px; width: 144px; }
     .site-header { flex-direction: column; align-items: center; text-align: center; }
     .social-links { justify-content: center; }
     .pub-card { flex-direction: column; }
     .pub-thumb { width: 100%; min-width: unset; }
     .project-card { flex-direction: column; }
     .project-img { width: 100%; min-width: unset; height: 160px; }
+    .education-entry { grid-template-columns: 76px minmax(0, 1fr); gap: 14px; }
+    .education-logo { width: 76px; height: 58px; }
+    .education-logo img { max-width: 58px; max-height: 45px; }
+    .education-logo.ensae img { max-width: 67px; }
     .education-heading { align-items: flex-start; flex-direction: column; gap: 2px; }
     .subscribe-form { flex-direction: column; }
     .subscribe-form button { width: 100%; }
@@ -484,10 +553,22 @@
 </head>
 
 <body>
+<details class="side-menu">
+  <summary>On this page</summary>
+  <nav aria-label="Page sections">
+    <a href="#top">About</a>
+    <a href="#education">Education</a>
+    <a href="#publications">Publications</a>
+    <a href="#projects">Projects</a>
+    <a href="#blog">Blog</a>
+    <a href="#awards">Awards</a>
+  </nav>
+</details>
+
 <div class="page-wrapper">
 
   <!-- HEADER -->
-  <header class="site-header">
+  <header class="site-header" id="top">
     <div class="profile-photo">
       <img src="AboutPageAssets/images/profile1.jpeg" alt="Ava Kouhana">
     </div>
@@ -497,14 +578,8 @@
       <p>
         I completed my ICME master's at Stanford in June 2026, where I researched reinforcement learning and world models in Professor Gordon Wetzstein's lab.
         Beyond the lab, I built on my undergraduate background in applied mathematics through courses including Operating Systems Design and Implementation (CS140E) and Parallel Computing (CME 213), and I served as a teaching assistant for Machine Learning (CS229).
-        Before Stanford, I spent six months at Harvard with <a href="https://wang.hms.harvard.edu/about-us/" target="_blank">Dr. Mengyu Wang</a> working on image segmentation and vision-language models for fairness in medical imaging,
-        followed by six months with <a href="https://med.stanford.edu/profiles/craig-levin" target="_blank">Dr. Craig Levin</a> applying latent diffusion models to PET image reconstruction.
-      </p>
-      <p>
-        I am currently looking for my next opportunity in industry.
       </p>
       <div class="social-links">
-        <a href="bio.html">Bio</a>
         <a href="mailto:akouhana@stanford.edu">
           <img src="AboutPageAssets/images/mail.png" alt=""> Email
         </a>
@@ -525,33 +600,39 @@
   </header>
 
   <!-- EDUCATION -->
-  <section class="section">
+  <section class="section" id="education">
     <h2 class="section-title">Education</h2>
     <hr class="section-rule">
     <div class="education-list">
       <article class="education-entry">
-        <div class="education-heading">
-          <h3 class="education-school">Stanford University</h3>
-          <span class="education-dates">Fall 2024&ndash;June 2026</span>
+        <div class="education-logo">
+          <img src="AboutPageAssets/images/stanford-logo.png" alt="Stanford University logo">
         </div>
-        <p class="education-degree">M.S. in Computational &amp; Mathematical Engineering</p>
-        <p class="education-detail">Graduate Teaching Assistant for CS229: Machine Learning, Fall 2025.</p>
-        <p class="education-coursework"><em>Relevant coursework:</em> Deep Reinforcement Learning (CS224R), Operating Systems Design and Implementation (CS140E), Parallel Computing using CUDA (CME213), and Numerical Linear Algebra (CME302).</p>
+        <div class="education-content">
+          <div class="education-heading">
+            <h3 class="education-school">Stanford University</h3>
+            <span class="education-dates">Fall 2024&ndash;June 2026</span>
+          </div>
+          <p class="education-degree">M.S. in Computational &amp; Mathematical Engineering</p>
+        </div>
       </article>
       <article class="education-entry">
-        <div class="education-heading">
-          <h3 class="education-school">ENSAE Paris</h3>
-          <span class="education-dates">2021&ndash;2024</span>
+        <div class="education-logo ensae">
+          <img src="AboutPageAssets/images/ensae-paris-logo.png" alt="ENSAE Paris logo">
         </div>
-        <p class="education-degree">Bachelor's degree in Applied Mathematics</p>
-        <p class="education-detail">Admitted through a competitive mathematics entrance examination, ranking in the top 15 of approximately 7,000 candidates.</p>
-        <p class="education-coursework"><em>Relevant coursework:</em> Statistics, Monte Carlo Simulation, Linear Algebra, Measure Theory, and Optimization.</p>
+        <div class="education-content">
+          <div class="education-heading">
+            <h3 class="education-school">ENSAE Paris</h3>
+            <span class="education-dates">2021&ndash;2024</span>
+          </div>
+          <p class="education-degree">Bachelor's degree in Applied Mathematics</p>
+        </div>
       </article>
     </div>
   </section>
 
   <!-- PUBLICATIONS -->
-  <section class="section">
+  <section class="section" id="publications">
     <h2 class="section-title">Publications</h2>
     <hr class="section-rule">
     <div class="pub-list">
@@ -622,7 +703,7 @@
   </section>
 
   <!-- PROJECTS -->
-  <section class="section">
+  <section class="section" id="projects">
     <h2 class="section-title">Projects</h2>
     <hr class="section-rule">
     <div class="project-list">
@@ -679,7 +760,7 @@
             <p class="project-desc">Analyzed interaction between imitation learning and residual RL, showing that increased data can degrade performance.</p>
           </div>
           <div class="link-row">
-            <a class="link-btn" href="AboutPageAssets/images/CS_234_Project_Final_Report.pdf" target="_blank">Report</a>
+            <a class="link-btn" href="AboutPageAssets/images/residual_rl_project.pdf" target="_blank">Report</a>
           </div>
         </div>
       </div>
@@ -687,7 +768,7 @@
   </section>
 
   <!-- BLOG -->
-  <section class="section">
+  <section class="section" id="blog">
     <div class="section-heading-row">
       <h2 class="section-title">Blog</h2>
       <a class="link-btn" href="blog/index.html">Visit the blog</a>
@@ -729,12 +810,11 @@
         <input type="text" name="_honey" style="display:none">
         <button type="submit">Subscribe</button>
       </form>
-      <span class="subscribe-note">Occasional updates only. Your email will be used only for blog updates.</span>
     </div>
   </section>
 
   <!-- AWARDS -->
-  <section class="section">
+  <section class="section" id="awards">
     <h2 class="section-title">Grants &amp; Awards</h2>
     <hr class="section-rule">
     <ul class="awards-list">
