@@ -79,8 +79,8 @@
   }
 
   .profile-photo img {
-    width: 163px;
-    height: 163px;
+    width: 196px;
+    height: 196px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid var(--border);
@@ -156,11 +156,8 @@
     left: max(18px, calc(50% - 700px));
     width: 128px;
     z-index: 20;
-    padding: 10px;
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: 0 3px 14px rgba(0,0,0,0.07);
+    padding: 4px 0;
+    background: transparent;
     font-size: 12px;
   }
 
@@ -264,10 +261,10 @@
 
   .education-entry {
     display: grid;
-    grid-template-columns: 104px minmax(0, 1fr);
-    gap: 20px;
+    grid-template-columns: 78px minmax(0, 1fr);
+    gap: 14px;
     align-items: center;
-    padding: 20px 0;
+    padding: 12px 0;
     border-bottom: 1px solid var(--border);
   }
 
@@ -275,20 +272,16 @@
   .education-entry:last-child { padding-bottom: 0; border-bottom: 0; }
 
   .education-logo {
-    width: 104px;
-    height: 70px;
+    width: 78px;
+    height: 58px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--white);
     overflow: hidden;
   }
 
-  .education-logo img { display: block; max-width: 78px; max-height: 56px; object-fit: contain; }
-  .education-logo.ensae { background: #7f1720; border-color: #7f1720; }
-  .education-logo.ensae img { max-width: 92px; max-height: 48px; }
+  .education-logo img { display: block; max-width: 62px; max-height: 54px; object-fit: contain; }
+  .education-logo.ensae img { max-width: 72px; max-height: 58px; }
 
   .education-heading {
     display: flex;
@@ -319,6 +312,13 @@
   }
 
   .education-degree { font-weight: 500; }
+
+  .education-school-full {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.4;
+    margin-bottom: 2px;
+  }
 
   /* PUBLICATIONS */
   .pub-list { display: flex; flex-direction: column; gap: 28px; }
@@ -522,10 +522,7 @@
       left: auto;
       width: 100%;
       padding: 9px 20px;
-      border-width: 0 0 1px;
-      border-radius: 0;
-      background: rgba(250,250,248,0.96);
-      backdrop-filter: blur(8px);
+      background: var(--bg);
     }
     .side-menu nav { flex-direction: row; justify-content: center; gap: 8px; }
   }
@@ -540,10 +537,10 @@
     .pub-thumb { width: 100%; min-width: unset; }
     .project-card { flex-direction: column; }
     .project-img { width: 100%; min-width: unset; height: 160px; }
-    .education-entry { grid-template-columns: 76px minmax(0, 1fr); gap: 14px; }
-    .education-logo { width: 76px; height: 58px; }
-    .education-logo img { max-width: 58px; max-height: 45px; }
-    .education-logo.ensae img { max-width: 67px; }
+    .education-entry { grid-template-columns: 64px minmax(0, 1fr); gap: 12px; }
+    .education-logo { width: 64px; height: 50px; }
+    .education-logo img { max-width: 52px; max-height: 46px; }
+    .education-logo.ensae img { max-width: 60px; max-height: 50px; }
     .education-heading { align-items: flex-start; flex-direction: column; gap: 2px; }
     .subscribe-form { flex-direction: column; }
     .subscribe-form button { width: 100%; }
@@ -572,6 +569,9 @@
       <p class="profile-subtitle">Former MS Student &mdash; Stanford ICME &middot; Computational &amp; Mathematical Engineering</p>
       <p>
         I completed my ICME master's at Stanford in June 2026. At Stanford, I conducted research on world models in Professor Gordon Wetzstein's lab and served as a teaching assistant for Machine Learning (CS229).
+      </p>
+      <p>
+        Prior to Stanford, I spent six months at Harvard with <a href="https://wang.hms.harvard.edu/about-us/" target="_blank">Dr. Mengyu Wang</a> on image segmentation and vision-language models for medical imaging fairness, and another six months with <a href="https://med.stanford.edu/profiles/craig-levin" target="_blank">Dr. Craig Levin</a> applying latent diffusion models to PET image reconstruction.
       </p>
       <p>
         More recently, I have been working on <a href="blog/coveragent.html">CoverAgent</a>, a targeted behavioral evaluation harness designed to red-team multi-agent systems for collusion. It has produced some results I find especially interesting&mdash;read more on my <a href="blog/index.html">blog</a>.
@@ -622,6 +622,7 @@
             <h3 class="education-school">ENSAE Paris</h3>
             <span class="education-dates">2021&ndash;2024</span>
           </div>
+          <p class="education-school-full">National School of Statistics and Economic Administration</p>
           <p class="education-degree">Undergraduate degree in Applied Mathematics</p>
         </div>
       </article>
